@@ -524,9 +524,7 @@ Category_distribution <- all_tax_regions_derep %>%
 
 Category_distribution
 
-ggsave("figures/all/Category_distribution.png", Category_distribution, width = 10, height = 10)
-
-ggsave("figures/all/Category_distribution_no_loose.png", Category_distribution_no_loose, width = 10, height = 10)
+ggsave("figures/all/Category_distribution.svg", Category_distribution, width = 10, height = 10)
 
 
 
@@ -568,7 +566,7 @@ all_regions_derep_barplot_no_loose
 
 
 
-ggsave("figures/all/all_regions_derep_barplot_no_loose.png", all_regions_derep_barplot_no_loose, height = 16, width = 24, dpi = 200)
+ggsave("figures/all/all_regions_derep_barplot_no_loose.svg", all_regions_derep_barplot_no_loose, height = 16, width = 24, dpi = 200)
 
 
 
@@ -673,7 +671,7 @@ HumGut_Heatmap <- ggplot(HumGut_all_regions_prevalent, aes(fct_reorder(product, 
     legend.title = element_text(size = 25, vjust = 3),
     legend.key.size = unit(2, "cm")
     )
-ggsave("figures/humgut/HumGut_Prevalent_Heatmap.png", HumGut_Heatmap, width = 32, height = 16, dpi = 200)
+ggsave("figures/humgut/HumGut_Prevalent_Heatmap.svg", HumGut_Heatmap, width = 32, height = 16, dpi = 200)
 
 HumGut_all_regions_prevalent_accessions <- all_regions_derep %>% 
   filter(Database == "HumGut", !str_detect(gtdb_classification, "pectinophilus")) %>%
@@ -769,7 +767,7 @@ REThiNk_core_heatmap <- ggplot(REThiNk_all_regions_prevalent, aes(fct_reorder(pr
     legend.key.size = unit(2, "cm")
     )
 
-ggsave("figures/REThiNk/REThiNk_core_heatmap.png", REThiNk_core_heatmap, width = 32, height = 16, dpi = 200)
+ggsave("figures/REThiNk/REThiNk_core_heatmap.svg", REThiNk_core_heatmap, width = 32, height = 16, dpi = 200)
 
 REThiNk_strict_accessions <- REThiNk_all_regions_derep %>% 
   filter(gtdb_classification != "Unclassified Bacteria") %>%
@@ -829,6 +827,6 @@ REThiNk_heatmap <- ggplot(REThiNk_all_regions_prevalent, aes(fct_reorder(product
 
 REThiNK_heatmap_tree <- REThiNk_heatmap %>% insert_left(tree, width = 0.1)
 
-ggsave("figures/REThiNk/REThiNk_core_heatmap_tree.png", REThiNK_heatmap_tree, width = 24, height = 16, dpi = 200)
+ggsave("figures/REThiNk/REThiNk_core_heatmap_tree.svg", REThiNK_heatmap_tree, width = 24, height = 16, dpi = 200)
 
 ```
