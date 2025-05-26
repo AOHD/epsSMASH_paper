@@ -1,0 +1,124 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(igraph)
+library(stringr)
+library(ggforce)
+library(data.table)
+library(ggupset)
+library(gggenes)
+library(forcats)
+library(ggtree)
+library(treeio)
+`%ni%` <- Negate(`%in%`)
+
+
+# Function which plots all the selected gene clusters (every gene cluster in an order for example)
+# The function takes a subset size as input, which is the number of gene clusters to plot in each plot
+plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "right") {
+  # Get the unique regions
+  unique_regions <- unique(data$region_id)
+  
+  # Calculate the number of subsets
+  num_subsets <- ceiling(length(unique_regions) / subset_size)
+  
+  # Loop over each subset
+  for(i in seq_len(num_subsets)) {
+    # Calculate the indices for this subset
+    start_index <- ((i - 1) * subset_size) + 1
+    end_index <- min(i * subset_size, length(unique_regions))
+    
+    # Get the regions for this subset
+    subset_regions <- unique_regions[start_index:end_index]
+    
+    # Filter the data for these regions and plot
+    plot <- data %>%
+      mutate(strand = ifelse(strand == 1, TRUE, FALSE)) %>%
+      filter(region_id %in% subset_regions) %>%
+      ggplot(aes(xmin = start, xmax = end, 
+      y = "", 
+      fill = gene_function, forward = strand)) +
+      geom_gene_arrow() +
+      facet_wrap(~ region_id, scales = "free", ncol = ncol) +
+      ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
+      theme(legend.position = legend_position)
+    print(plot)
+  }
+}
+
+
+```
+
+## MiDAS Global
+
+```{r}
+
+gene_functions <- fread("../epsSMASH_analyses/REThiNk_catalogue/data/gene_functions.tsv")
+
+
+data <- fread(
+    "../epsSMASH_analyses/REThiNk_catalogue/data/gene_info_REThiNk_derep.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    #filter(bitscore == max(bitscore)) %>%
+    #distinct(gene_id, .keep_all = TRUE) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, ".", region_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query"))
+
+
+hyphomicrobium <- fread("../bigscape/REThiNk/strict_core/hyphomicrobium/list.tsv", header = F)
+```
+
+```{r}
+hyphomicrobium_data <- data %>% filter(region_id %in% hyphomicrobium$V1) %>% group_by(gene_id) %>% distinct(gene_id, .keep_all = TRUE) %>% select(gene_id, gene_function) %>% mutate(gene_function = ifelse(is.na(gene_function), "NA", gene_function))
+
+fwrite(hyphomicrobium_data, "../bigscape/REThiNk/strict_core/hyphomicrobium/hyphomicrobium_gene_functions.csv")
+
+plot_gene_clusters(data %>% filter(region_id %in% hyphomicrobium$V1), 10, ncol = 2)
+```
+## HumGut
+
+```{r}
+gene_functions <- fread("../epsSMASH_analyses/REThiNk_catalogue/data/gene_functions.tsv")
+
+
+data <- fread(
+    "../epsSMASH_analyses/HumGut/data/gene_info_HumGut.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    filter(bitscore == max(bitscore)) %>%
+    #distinct(gene_id, .keep_all = TRUE) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query"))
+
+```
+

@@ -1,0 +1,210 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(igraph)
+library(stringr)
+library(ggforce)
+library(data.table)
+library(ggupset)
+library(gggenes)
+library(forcats)
+library(readxl)
+`%ni%` <- Negate(`%in%`)
+```
+
+```{r}
+Dueholm_BGCs <- fread("data/Dueholm/Dueholm.tsv") %>% 
+  group_by(MAG, Exopolysaccharide) %>% 
+  mutate(
+    Exopolysaccharide = case_when(
+      str_detect(Exopolysaccharide, "Cellulose") ~ "Cellulose",
+      Exopolysaccharide == "PNAG_pga" ~ "PNAG-pga",
+      .default = Exopolysaccharide
+    )
+  ) %>% rename(Dueholm = Exopolysaccharide) 
+length(unique(Dueholm_BGCs$MAG))
+
+epsSMASH_Dueholm <- fread("../epsSMASH_analyses/MGP1000/all_regions.tsv") %>% 
+  mutate(
+    product = case_when(
+      str_detect(product, "cellulose") ~ "Cellulose",
+      str_detect(product, "alginate") ~ "Alginate",
+      str_detect(product, "pel") ~ "Pel",
+      str_detect(product, "PNAG") ~ "PNAG-pga",
+      .default = product
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan-like|acetan-like|succinoglycan-like|colanic-like|xanthan-like|galactoglucan-like|psl-like|PNAG_eps-like|lactobacillus_eps-like|sphingans-like|zooglan-like|emulsan-like|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructan-sucrases|alpha-glucansucrases"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    )
+  ) %>% 
+  select(MAG = file, epsSMASH = product) %>%
+  filter(epsSMASH %in% unique(Dueholm_BGCs$Dueholm)) %>% 
+  full_join(
+    Dueholm_BGCs %>% 
+    group_by(MAG) %>% distinct(Dueholm, .keep_all = TRUE), by = c("MAG")
+  ) %>%
+  mutate(
+  Dueholm = ifelse(Dueholm == epsSMASH | is.na(epsSMASH), Dueholm, NA),
+  exoPS = ifelse(is.na(Dueholm), epsSMASH, Dueholm),
+  Detection = case_when(
+    is.na(Dueholm) & !is.na(epsSMASH) ~ "epsSMASH",
+    !is.na(Dueholm) & is.na(epsSMASH) ~ "Dueholm",
+    !is.na(Dueholm) & !is.na(epsSMASH) ~ "Both",
+    is.na(Dueholm) & is.na(epsSMASH) ~ "none"
+    )
+    )
+  
+
+ggplot(epsSMASH_Dueholm %>% group_by(Detection, exoPS) %>% count() %>%
+  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Dueholm", "Both"))), aes(x = exoPS, y = n, fill = Detection)) +
+  geom_col(position = "stack") +
+  scale_y_continuous(trans = "identity") +
+  ylab("No. of BGCs found in genomes") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 12),
+    legend.text = element_text(size = 12)
+  )
+
+Dueholm_unique_list <- as.list(epsSMASH_Dueholm %>% filter(compare == "Dueholm") %>% pull(MAG))
+
+Dueholm_unique <- Dueholm_BGCs %>% filter(MAG %in% Dueholm_unique_list) %>% group_by(MAG) %>%
+  count()
+
+Dueholm_unique1 <- Dueholm_BGCs %>% filter(MAG %in% Dueholm_unique_list) %>% group_by(MAG) %>%
+  left_join(Dueholm_unique)
+
+```
+
+```{r}
+gene_functions <- fread("../epsSMASH/epssmash/outputs/html/gene_functions.tsv", header = FALSE) %>%
+  rename(Query = V1, gene_function = V2)
+
+
+data <- fread(
+  "../epsSMASH_analyses/MGP1000/gene_info_MGP1000.tsv") %>%
+  mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+  ungroup() %>%
+  mutate(
+      region_id = paste0(contig_id, ".", region_id),
+      gene_id2 = paste0(genome_id, gene_id),
+      location = as.character(location),
+      location = gsub(":", "_", location),
+      location = gsub("]", "_", location),
+      location = gsub("\\[", "", location),
+      location = gsub(">", "", location),
+      location = gsub("<", "", location),
+      location = gsub("join\\{", "", location),
+      location = gsub("}", "", location),
+      location = gsub(",.*", "", location)
+  ) %>%
+  group_by(gene_id2) %>%
+  separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+  mutate(
+      start = as.numeric(start),
+      end = as.numeric(end),
+      strand = ifelse(strand == "(+)", 1, -1)
+  ) %>%
+  left_join(gene_functions, by = c("Query" = "Query"))
+   #filter(!str_detect(product, "-like"))
+
+length(unique(data$genome_id))
+
+# Function which plots all the selected gene clusters (every gene cluster in an order for example)
+# The function takes a subset size as input, which is the number of gene clusters to plot in each plot
+plot_gene_clusters <- function(data, subset_size) {
+  # Get the unique regions
+  unique_regions <- unique(data$region_id)
+  
+  # Calculate the number of subsets
+  num_subsets <- ceiling(length(unique_regions) / subset_size)
+  
+  # Loop over each subset
+  for(i in seq_len(num_subsets)) {
+    # Calculate the indices for this subset
+    start_index <- ((i - 1) * subset_size) + 1
+    end_index <- min(i * subset_size, length(unique_regions))
+    
+    # Get the regions for this subset
+    subset_regions <- unique_regions[start_index:end_index]
+    
+    # Filter the data for these regions and plot
+    plot <- data %>%
+      mutate(strand = ifelse(strand == 1, TRUE, FALSE)) %>%
+      filter(region_id %in% subset_regions) %>%
+      ggplot(aes(xmin = start, xmax = end, 
+      y = Query, 
+      fill = Query, forward = strand)) +
+      geom_gene_arrow() +
+      facet_wrap(~ region_id, scales = "free", ncol = 1) +
+      ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
+      theme(
+        axis.text.y = element_text(angle=45),
+        theme(legend.position="none")
+      )
+    print(plot)
+  }
+}
+
+### Filtering and plotting gene clusters
+filter_pel <- data %>%
+  filter(str_detect(product, "pel")) %>% filter(genome_id %ni% Dueholm_BGCs$MAG) %>% filter(str_detect(Query, "pel")) 
+  
+length(unique(filter_pel$region_id))
+plot_gene_clusters(filter_pel, 10)
+
+filter_PNAG <- data %>%
+  filter(str_detect(product, "PNAG")) %>% filter(genome_id %ni% Dueholm_BGCs$MAG)
+  
+length(unique(filter_PNAG$region_id))
+plot_gene_clusters(filter_PNAG, 10)
+
+
+filter_cellulose <- data %>%
+  filter(str_detect(product, "cellulose")) %>% filter(genome_id %ni% Dueholm_BGCs$MAG) %>% filter(str_detect(Query, "Bcs"))
+  
+length(unique(filter_cellulose$region_id))
+plot_gene_clusters(filter_cellulose, 10)
+
+
+filter_lactobacillus <- data %>%
+  filter(str_detect(product, "lactobacillus")) %>% filter(genome_id %ni% Dueholm_BGCs$MAG) %>% filter(str_detect(Query, "lactobacillus"))
+  
+length(unique(filter_lactobacillus$region_id))
+plot_gene_clusters(filter_lactobacillus, 10)
+
+
+```
+
+
