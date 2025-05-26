@@ -111,7 +111,7 @@ HumGut_all_regions <- fread("data/HumGut/all_regions.tsv") %>%
 HumGut_metadata <- HumGut_all_regions %>% mutate(shared_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk_region_1")) %>%
   separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
 
-fwrite(HumGut_metadata, "./data/HumGut_metadata.tsv", sep = "\t")
+fwrite(HumGut_metadata, "./data/HumGut/HumGut_metadata.tsv", sep = "\t")
 
 
 ###########
@@ -198,7 +198,7 @@ all_tax <- rbindlist(all_tax, fill  = TRUE)
 
 ```
 
-## Messing around with dereplication and HQ MAG subsetting
+## Dereplication and HQ MAG subsetting
 ### HumGut
 
 ```{r}
@@ -219,9 +219,9 @@ HumGut_metadata <- HumGut_all_regions_derep %>%
     ) %>%
   separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
 
-fwrite(HumGut_metadata, "./data/HumGut_metadata.tsv", sep = "\t")
+fwrite(HumGut_metadata, "./data/HumGut/HumGut_metadata.tsv", sep = "\t")
 
-
+HumGut_tax_HQ <- HumGut_tax %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
 HumGut_tax_derep_HQ <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
 
 
@@ -303,6 +303,7 @@ p1 + p2 + p3 + p4
 ```{r}
 
 
+REThiNk_derep <- fread("data/REThiNk/derep_MAGs_list.tsv")
 
 REThiNk_all_regions <- REThiNk_all_regions %>%
   mutate(
@@ -311,12 +312,16 @@ REThiNk_all_regions <- REThiNk_all_regions %>%
     )
   )
 
-REThiNk_all_regions_derep <- REThiNk_all_regions %>% filter(derep == TRUE)
+REThiNk_all_regions_derep <- REThiNk_all_regions
 
 
-REThiNk_all_regions_derep_HQ <- REThiNk_all_regions %>% filter(derep == TRUE & HQ == TRUE)
+REThiNk_all_regions_derep_HQ <- REThiNk_all_regions %>% filter(HQ == TRUE)
 
 REThiNk_tax_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
+
+REThiNk_tax_derep <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
+
+REThiNk_tax_derep_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id & genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
 
 
 # Outputting tsv of the species representative metadata which will be used to select regions for bigscape analysis and for coloring the network in cytoscape:
@@ -328,23 +333,9 @@ REThiNk_metadata <- REThiNk_all_regions_derep %>%
     ) %>%
   separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
 
-fwrite(REThiNk_metadata, "./data/REThiNk_metadata.tsv", sep = "\t")
+fwrite(REThiNk_metadata, "./data/REThiNk/REThiNk_metadata.tsv", sep = "\t")
 
 p1 <- REThiNk_all_regions %>% filter(Category != "Uncharacterised") %>%
-  group_by(Database, Category, product) %>% count() %>% arrange(desc(n)) %>%
-  ggplot(aes(x = fct_reorder(product, Category), y = n, fill = product)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~Database, ncol = 1) +
-  ylab("Number of regions") +
-  ggtitle("REThiNk All") +
-  xlab("") +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 15),
-    legend.position = "none"
-    )
-
-p2 <- REThiNk_all_regions %>% filter(derep == TRUE)%>% filter(Category != "Uncharacterised") %>%
   group_by(Database, Category, product) %>% count() %>% arrange(desc(n)) %>%
   ggplot(aes(x = fct_reorder(product, Category), y = n, fill = product)) +
   geom_bar(stat = "identity") +
@@ -358,13 +349,14 @@ p2 <- REThiNk_all_regions %>% filter(derep == TRUE)%>% filter(Category != "Uncha
     legend.position = "none"
     )
 
-p3 <- REThiNk_all_regions %>% filter(HQ == TRUE)%>% filter(Category != "Uncharacterised") %>%
+
+p2 <- REThiNk_all_regions %>% filter(HQ == TRUE)%>% filter(Category != "Uncharacterised") %>%
   group_by(Database, Category, product) %>% count() %>% arrange(desc(n)) %>%
   ggplot(aes(x = fct_reorder(product, Category), y = n, fill = product)) +
   geom_bar(stat = "identity") +
   facet_wrap(~Database, ncol = 1) +
   ylab("Number of regions") +
-  ggtitle("REThiNk HQ") +
+  ggtitle("REThiNk derep+HQ") +
   xlab("") +
   theme_minimal() +
   theme(
@@ -372,21 +364,8 @@ p3 <- REThiNk_all_regions %>% filter(HQ == TRUE)%>% filter(Category != "Uncharac
     legend.position = "none"
     )
 
-p4 <- REThiNk_all_regions %>% filter(HQ == TRUE & derep == TRUE)%>% filter(Category != "Uncharacterised") %>%
-  group_by(Database, Category, product) %>% count() %>% arrange(desc(n)) %>%
-  ggplot(aes(x = fct_reorder(product, Category), y = n, fill = product)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~Database, ncol = 1) +
-  ylab("Number of regions") +
-  ggtitle("REThiNk HQ") +
-  xlab("") +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 15),
-    legend.position = "none"
-    )
 
-p1 + p2 + p3 + p4
+p1 + p2
 
 ```
 
@@ -522,14 +501,14 @@ Category_distribution <- all_tax_regions_derep %>%
   group_by(Database) %>% 
   mutate(no_genomes = length(unique(genome_id))) %>% 
   ungroup() %>%
-  filter(!is.na(product)) %>%
+  filter(!is.na(product), Database == "MiDAS Global") %>%
   group_by(Database, no_genomes, Category, genome_id) %>%
   summarise(product = length(product)) %>%
   group_by(Database, no_genomes, Category) %>% count() %>%
   mutate(`% Genomes with EPS BGC` = (n/no_genomes)*100) %>% arrange(desc(`% Genomes with EPS BGC`)) %>%
-  ggplot(aes(x = reorder(Database, n, decreasing = TRUE), y = `% Genomes with EPS BGC`, fill = Category)) +
+  ggplot(aes(x = reorder(Database, n, decreasing = FALSE), y = `% Genomes with EPS BGC`, fill = reorder(Category,n))) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0,100)) +
+  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0,60)) +
   ylab("% Genomes with EPS BGC") +
   xlab("") +
   scale_fill_manual(values = c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")) +
@@ -538,37 +517,12 @@ Category_distribution <- all_tax_regions_derep %>%
     axis.text.x = element_text(angle = 45, hjust = 1, size = 20),
     axis.text.y = element_text(size = 20),
     legend.text = element_text(size = 20),
-    legend.title = element_text(size = 20),
+    legend.title = element_blank(),
     axis.title.y = element_text(size = 20)
     )
 
 
-
-Category_distribution_no_loose <- all_tax_regions_derep %>% 
-  group_by(Database) %>% 
-  mutate(no_genomes = length(unique(genome_id))) %>% 
-  ungroup() %>%
-  filter(!is.na(product), Category != "Uncharacterised") %>%
-  group_by(Database, no_genomes, Category, genome_id) %>%
-  summarise(product = length(product)) %>%
-  group_by(Database, no_genomes, Category) %>% count() %>% 
-  mutate(`% Genomes with EPS BGC` = (n/no_genomes)*100) %>% arrange(desc(`% Genomes with EPS BGC`)) %>%
-  ggplot(aes(x = reorder(Database, n, decreasing = TRUE), y = `% Genomes with EPS BGC`, fill = Category)) +
-  geom_bar(stat = "identity") +
-  ylab("% Genomes with EPS BGC") +
-  xlab("") +
-  scale_fill_manual(values = c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")) +
-  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0,100)) +
-  theme_classic() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 20),
-    axis.text.y = element_text(size = 20),
-    legend.text = element_text(size = 20),
-    legend.title = element_text(size = 20),
-    axis.title.y = element_text(size = 20)
-    )
 Category_distribution
-Category_distribution_no_loose
 
 ggsave("figures/all/Category_distribution.png", Category_distribution, width = 10, height = 10)
 
@@ -597,13 +551,12 @@ all_regions_derep_barplot_no_loose <- all_tax_regions_derep %>%
   mutate(`% Genomes with EPS BGC` = (n/no_genomes)*100) %>%
   ggplot(aes(x = fct_reorder(product, n_Category), y = `% Genomes with EPS BGC`, fill = product)) +
   geom_bar(stat = "identity") +
-  geom_text(aes(label= round(`% Genomes with EPS BGC`, digits = 2), vjust = "inward")) +
+  geom_text(aes(label= round(`% Genomes with EPS BGC`, digits = 2), vjust = "inward", size = 25)) +
   facet_nested(Database ~ fct_reorder(Category, n_Category), nest_line = element_line(colour = "red"), space = "free", scales = "free_x") +
   scale_y_continuous(trans = "identity") +
   scale_color_brewer(palette = "Set2") +
   xlab("") +
   ylab("% Genomes with EPS BGC") +
-  ggtitle("BGC distribution for species-represenative genomes in the HumGut and MiDAS databases") + 
   theme(
     axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
     axis.text.y = element_text(size = 20, vjust = 0.5),
@@ -613,42 +566,9 @@ all_regions_derep_barplot_no_loose <- all_tax_regions_derep %>%
     )
 all_regions_derep_barplot_no_loose
 
-all_regions_derep_barplot <- all_tax_regions_derep %>% 
-  group_by(Database) %>% 
-  mutate(no_genomes = length(unique(genome_id))) %>% 
-  ungroup() %>%
-  filter(!is.na(product)) %>%
-  mutate(product = ifelse(Category == "Uncharacterised", "Uncharacterised", product)) %>%
-  mutate(Category = ifelse(Category == "Uncharacterised", "", Category)) %>%
-  group_by(genome_id) %>%
-  distinct(product, .keep_all = TRUE) %>%
-  group_by(Database, no_genomes, n_Category, Category, product) %>% count() %>% arrange(desc(n)) %>%
-  mutate(`% Genomes with EPS BGC` = (n/no_genomes)*100) %>%
-  ggplot(aes(x = fct_reorder(product, n_Category), y = `% Genomes with EPS BGC`, fill = product)) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(label= round(`% Genomes with EPS BGC`, digits = 2), vjust = "inward")) +
-  facet_nested(Database ~ fct_reorder(Category, n_Category), nest_line = element_line(colour = "red"), space = "free", scales = "free_x") +
-  scale_y_continuous(trans = "identity") +
-  scale_color_brewer(palette = "Set2") +
-  xlab("") +
-  ylab("% Genomes with EPS BGC") +
-  ggtitle("BGC distribution for species-represenative genomes in the HumGut and MiDAS databases") + 
-  theme(
-    axis.text.x = element_text(angle = 60, hjust = 1, size = 20),
-    axis.text.y = element_text(size = 20, vjust = 0.5),
-    strip.text = element_text(size = 25),
-    legend.position = "none",
-    axis.title.y = element_text(size = 25)
-    )
-all_regions_derep_barplot
 
 
 ggsave("figures/all/all_regions_derep_barplot_no_loose.png", all_regions_derep_barplot_no_loose, height = 16, width = 24, dpi = 200)
-
-
-
-
-ggsave("figures/all/all_regions_derep_barplot.png", all_regions_derep_barplot, height = 16, width = 24, dpi = 200)
 
 
 
@@ -765,7 +685,7 @@ HumGut_all_regions_prevalent_accessions <- all_regions_derep %>%
   mutate(record_id = paste0(genome_id, "_", record_id, ".region00", region)) %>%
   mutate(product = ifelse(str_detect(product, "putative"), "Uncharacterised", product))
 
-fwrite(HumGut_all_regions_prevalent_accessions, "data/HumGut_prevalent_hits.tsv", sep = "\t")
+fwrite(HumGut_all_regions_prevalent_accessions, "data/HumGut/HumGut_prevalent_hits.tsv", sep = "\t")
 
 ```
 
@@ -858,7 +778,7 @@ REThiNk_strict_accessions <- REThiNk_all_regions_derep %>%
   mutate(file_name = paste0(genome_id, "_", record_id, ".region00", region)) %>%
   mutate(product = ifelse(str_detect(product, "putative"), "Uncharacterised", product))
 
-fwrite(REThiNk_strict_accessions, "data/MiDAS_strict_hits.tsv", sep = "\t")
+fwrite(REThiNk_strict_accessions, "data/REThiNk/MiDAS_strict_hits.tsv", sep = "\t")
 
 ```
 
