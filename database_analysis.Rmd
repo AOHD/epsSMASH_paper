@@ -501,7 +501,7 @@ Category_distribution <- all_tax_regions_derep %>%
   group_by(Database) %>% 
   mutate(no_genomes = length(unique(genome_id))) %>% 
   ungroup() %>%
-  filter(!is.na(product), Database == "MiDAS Global") %>%
+  filter(!is.na(product)) %>%
   group_by(Database, no_genomes, Category, genome_id) %>%
   summarise(product = length(product)) %>%
   group_by(Database, no_genomes, Category) %>% count() %>%
