@@ -2,3 +2,5 @@ data/Bundalovic-Torma/genomes/
 data/GTDB220_HumGut_GOMC/*
 !data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv
 !data/GTDB220_HumGut_GOMC/GOMC-HumGut.gtdb.R220.classification.tsv
+bigscape/*/regions
+bigscape/*/output

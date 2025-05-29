@@ -41,6 +41,24 @@ Number of MAGs when all is HQ and all is dereplicated:
 HumGut: 2094 MAGs
 REThiNk: 12106 MAGs
 
+```{r}
+
+GOMC_metadata <- fread("../epsSMASH_analyses/GOMC/data/41586_2024_7891_MOESM3_ESM.csv")
+
+MFD_metadata <- fread("../epsSMASH_analyses/MFD/data/MFD_mags_drep_V4.tsv")
+
+
+GOMC_HQ_genome_ids <- GOMC_metadata %>% filter(`Contamination (%)` <= 5, `Completeness (%)` >= 90) %>% select(genome_id = Bin_id)
+
+MFD_HQ_genome_ids <- MFD_metadata %>% filter(MAG_status == "HQ") %>% select(genome_id = bin)
+
+fwrite(GOMC_HQ_genome_ids, "data/GOMC/GOMC_HQ_genome_ids.tsv")
+
+fwrite(MFD_HQ_genome_ids, "data/MFD/MFD_HQ_genome_ids.tsv")
+
+
+
+```
 
 ```{r}
 
@@ -119,10 +137,13 @@ fwrite(HumGut_metadata, "./data/HumGut/HumGut_metadata.tsv", sep = "\t")
 ###########
 
 REThiNk_HQ_tax <- fread("data/REThiNk/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
-  select(genome_id = bin, gtdb_classification = tax_gtdb.r220)
+  select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3")
+
+REThiNk_MQ_MiDAS <- fread("data/REThiNk/midas.mq.mags.midas5.3.taxa.tsv") %>%
+  select(genome_id = V1, MiDAS_classification = V2)
 
 REThiNk_MQ_tax <- fread("data/REThiNk/31K-mqMAGs.GTDB_taxa.tsv") %>%
-  select(genome_id = bin, gtdb_classification = tax_gtdb.r220)
+  select(genome_id = bin, gtdb_classification = tax_gtdb.r220) %>% left_join(REThiNk_MQ_MiDAS)
 
 REThiNk_all_tax <- rbind(REThiNk_HQ_tax, REThiNk_MQ_tax)  %>%
   mutate(Database = "MiDAS Global")
@@ -317,11 +338,11 @@ REThiNk_all_regions_derep <- REThiNk_all_regions
 
 REThiNk_all_regions_derep_HQ <- REThiNk_all_regions %>% filter(HQ == TRUE)
 
-REThiNk_tax_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
+REThiNk_tax_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, MiDAS_classification, Database)
 
-REThiNk_tax_derep <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
+REThiNk_tax_derep <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, MiDAS_classification, Database)
 
-REThiNk_tax_derep_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id & genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, Database)
+REThiNk_tax_derep_HQ <- REThiNk_all_tax %>% filter(genome_id %in% REThiNk_derep$genome_id & genome_id %in% REThiNk_HQ_tax$genome_id) %>% mutate(Database = "MiDAS Global") %>% select(genome_id, gtdb_classification, MiDAS_classification, Database)
 
 
 # Outputting tsv of the species representative metadata which will be used to select regions for bigscape analysis and for coloring the network in cytoscape:
@@ -367,6 +388,8 @@ p2 <- REThiNk_all_regions %>% filter(HQ == TRUE)%>% filter(Category != "Uncharac
 
 p1 + p2
 
+fwrite(REThiNk_tax_HQ %>% select(genome_id), "data/REThiNk/REThiNk_HQ_genome_ids.tsv")
+
 ```
 
 
@@ -407,7 +430,7 @@ l = list(HumGut_tax_derep_HQ, REThiNk_tax_derep_HQ)
 
 all_tax_HQ_derep <- rbindlist(l, fill = TRUE) 
 
-all_tax_regions_HQ_derep <- all_tax_HQ_derep %>% left_join(all_regions_HQ_derep %>% select(-gtdb_classification, -Database), by = "genome_id")
+all_tax_regions_HQ_derep <- all_tax_HQ_derep %>% left_join(all_regions_HQ_derep %>% select(-gtdb_classification, -MiDAS_classification, -Database), by = "genome_id")
 
 ### Outputting HQ and derep'd HumGut genome ids for GTDB-Tk in order to get them up to date (GTDB r220 like REThiNK and MFD)
 
@@ -453,9 +476,9 @@ l = list(HumGut_tax_derep, REThiNk_tax_derep)
 
 all_tax_derep <- rbindlist(l, fill = TRUE) 
 
-all_tax_regions_derep <- all_tax_derep %>% left_join(all_regions_derep %>% select(-gtdb_classification, -Database), by = "genome_id")
+all_tax_regions_derep <- all_tax_derep %>% left_join(all_regions_derep %>% select(-gtdb_classification, -MiDAS_classification, -Database), by = "genome_id")
 
-all_tax_regions <- all_tax %>% left_join(all_regions %>% select(-gtdb_classification, -Database), by = "genome_id")
+all_tax_regions <- all_tax %>% left_join(all_regions %>% select(-gtdb_classification, -MiDAS_classification, -Database), by = "genome_id")
 
 ```
 
@@ -490,6 +513,15 @@ all_tax_regions_derep %>%
   ) %>% ungroup() %>% select(Database, no_genomes, no_genomes_w_region, percent_genomes_w_region) %>%
   distinct(Database, .keep_all = T)
   
+
+region_stats <- all_regions_derep %>% group_by(Database, genome_id) %>% count() %>% left_join(all_regions) %>% distinct(genome_id, .keep_all = TRUE)
+region_stats %>% group_by(Database) %>% summarise(mean = mean(n))
+region_stats %>% group_by(Database) %>% summarise(sd = sd(n))
+region_stats %>% filter(Database == "MiDAS Global") %>% ggplot(aes(x=n)) + geom_bar()
+
+ggplot(region_stats, aes(x = Database, y = n)) +
+  geom_boxplot()
+
 ```
 
 
@@ -525,6 +557,7 @@ Category_distribution <- all_tax_regions_derep %>%
 Category_distribution
 
 ggsave("figures/all/Category_distribution.svg", Category_distribution, width = 10, height = 10)
+ggsave("figures/all/Category_distribution.png", Category_distribution, width = 10, height = 10)
 
 
 
@@ -543,6 +576,9 @@ all_regions_derep_barplot_no_loose <- all_tax_regions_derep %>%
   ungroup() %>%
   filter(!is.na(product)) %>%
   filter(Category != "Uncharacterised") %>%
+  mutate(
+    Category = ifelse(str_detect(product, "-like"), "Synthase (relaxed)", Category)
+  ) %>%
   group_by(genome_id) %>%
   distinct(product, .keep_all = TRUE) %>%
   group_by(Database, no_genomes, n_Category, Category, product) %>% count() %>% arrange(desc(n)) %>%
@@ -567,6 +603,7 @@ all_regions_derep_barplot_no_loose
 
 
 ggsave("figures/all/all_regions_derep_barplot_no_loose.svg", all_regions_derep_barplot_no_loose, height = 16, width = 24, dpi = 200)
+ggsave("figures/all/all_regions_derep_barplot_no_loose.png", all_regions_derep_barplot_no_loose, height = 16, width = 24, dpi = 200)
 
 
 
@@ -608,6 +645,9 @@ HumGut_tax_Genome_no <- HumGut_tax_derep %>%
   select(Genus, Genus_no) %>% distinct(Genus, .keep_all = TRUE)
 
 HumGut_all_regions_prevalent <- all_regions_derep %>% 
+  mutate(
+      Category = ifelse(str_detect(product, "-like"), "Synthase (relaxed)", Category)
+  ) %>%
   filter(Database == "HumGut", !str_detect(gtdb_classification, "pectinophilus")) %>%
   separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";") %>%
   mutate(
@@ -672,6 +712,7 @@ HumGut_Heatmap <- ggplot(HumGut_all_regions_prevalent, aes(fct_reorder(product, 
     legend.key.size = unit(2, "cm")
     )
 ggsave("figures/humgut/HumGut_Prevalent_Heatmap.svg", HumGut_Heatmap, width = 32, height = 16, dpi = 200)
+ggsave("figures/humgut/HumGut_Prevalent_Heatmap.png", HumGut_Heatmap, width = 32, height = 16, dpi = 200)
 
 HumGut_all_regions_prevalent_accessions <- all_regions_derep %>% 
   filter(Database == "HumGut", !str_detect(gtdb_classification, "pectinophilus")) %>%
@@ -690,38 +731,46 @@ fwrite(HumGut_all_regions_prevalent_accessions, "data/HumGut/HumGut_prevalent_hi
 ### REThiNk
 
 ```{r}
-MiDAS_strict <- fread("data/MiDAS5.3_genus_core.txt", sep = "\t") %>% 
+MiDAS_strict <- fread("data/REThiNk/MiDAS5.3_genus_core.txt", sep = "\t") %>% 
   filter(Best == "Strict core") 
 
 REThiNk_tax_Genome_no <- REThiNk_tax_derep %>%
-  separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";") %>%
+  separate(MiDAS_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ",[a-z]:") %>%
     mutate(
     Genus = ifelse(
       str_detect(Genus, paste(MiDAS_strict$Genus, collapse = "|")), Genus, "Other Genera"
     ),
-    Genus = gsub(".__", "", Genus),
-    Phylum = gsub(".__", "", Phylum)
-    ) %>%
+    Genus = ifelse(
+      str_detect(Genus, "midas_g_81") & Genus != "midas_g_81", "Other Genera", Genus
+      ),
+    Genus = ifelse(is.na(Genus), "Other Genera", Genus)
+    )  %>%
   group_by(Genus) %>%
   mutate(Genus_no = sum(length(Genus))) %>%
   select(Genus, Genus_no) %>% distinct(Genus, .keep_all = TRUE)
   
 
 REThiNk_all_regions_prevalent <- REThiNk_all_regions_derep %>% 
-  filter(gtdb_classification != "Unclassified Bacteria") %>%
-  separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";[a-z]__") %>%
+  mutate(
+    Category = ifelse(str_detect(product, "-like"), "Synthase (relaxed)", Category)
+  ) %>%
+  filter(!is.na(MiDAS_classification)) %>%
+  separate(MiDAS_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ",[a-z]:") %>%
     mutate(
     Genus = ifelse(
       str_detect(Genus, paste(MiDAS_strict$Genus, collapse = "|")), Genus, "Other Genera"
     ),
-    Genus = gsub(".__", "", Genus),
-    Phylum = gsub(".__", "", Phylum)
-    ) %>%
-  left_join(REThiNk_tax_Genome_no) %>%
+    Genus = ifelse(
+      str_detect(Genus, "midas_g_81") & Genus != "midas_g_81", "Other Genera", Genus
+      ),
+    Genus = ifelse(is.na(Genus), "Other Genera", Genus)
+    )  %>%
+  left_join(REThiNk_tax_Genome_no, by = c("Genus")) %>%
   select(genome_id, Phylum, Family, Genus, Genus_no, product, Category, n_Category) %>%
   mutate(
     product = ifelse(Category == "Uncharacterised", "Uncharacterised", product),
-    Category = ifelse(Category == "Uncharacterised", "", Category)
+    Category = ifelse(Category == "Uncharacterised", "", Category),
+    Genus = ifelse(Genus == "Other Genera", "Other Genera", Genus)
          ) %>%
   group_by(genome_id) %>%
   distinct(product, .keep_all = TRUE) %>% 
@@ -736,19 +785,7 @@ REThiNk_all_regions_prevalent <- REThiNk_all_regions_derep %>%
       Genus != "Other Genera", 
       paste0(Phylum, " ", Genus, " (", as.character(Genus_no), ")"), 
       paste0(Genus, " ( ", as.character(Genus_no), " )")
-      ),
-    Family = case_when(
-      Family == "Flavobacteriaceae" & Genus != "Other Genera ( 21440 )" ~ 1,
-      Family == "Chitinophagaceae" & Genus != "Other Genera ( 21440 )" ~ 2,
-      Family == "Pirellulaceae" & Genus != "Other Genera ( 21440 )" ~ 3,
-      Family == "Sphingomonadaceae" & Genus != "Other Genera ( 21440 )" ~ 4,
-      Family == "Clostridiales" & Genus == "Hyphomicrobium_B" ~ 5,
-      Family == "Clostridiales" & Genus == "Hyphomicrobium_C" ~ 6,
-      Family == "Hyphomicrobiaceae" & Genus != "Other Genera ( 21440 )" ~ 7,
-      Family == "Rhodocyclaceae" & Genus != "Other Genera ( 21440 )" ~ 8,
-      Family == "Burkholderiaceae" & Genus != "Other Genera ( 21440 )" ~ 9,
-      .default = 10
-    )
+      )
     )
 
 
@@ -761,6 +798,7 @@ REThiNk_core_heatmap <- ggplot(REThiNk_all_regions_prevalent, aes(fct_reorder(pr
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1, size = 25),
     axis.text.y = element_text(size = 25),
+    axis.title.x = element_blank(),
     strip.text = element_text(size = 25),
     legend.text = element_text(size = 25),
     legend.title = element_text(size = 25, vjust = 3),
@@ -768,6 +806,7 @@ REThiNk_core_heatmap <- ggplot(REThiNk_all_regions_prevalent, aes(fct_reorder(pr
     )
 
 ggsave("figures/REThiNk/REThiNk_core_heatmap.svg", REThiNk_core_heatmap, width = 32, height = 16, dpi = 200)
+ggsave("figures/REThiNk/REThiNk_core_heatmap.png", REThiNk_core_heatmap, width = 32, height = 32, dpi = 200)
 
 REThiNk_strict_accessions <- REThiNk_all_regions_derep %>% 
   filter(gtdb_classification != "Unclassified Bacteria") %>%

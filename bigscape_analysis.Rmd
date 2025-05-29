@@ -77,30 +77,30 @@ data <- fread(
         end = as.numeric(end),
         strand = ifelse(strand == "(+)", 1, -1)
     ) %>%
-    left_join(gene_functions, by = c("Query" = "Query"))
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(REThiNk_all_tax)
 
-
+zooglan_noburk <- data %>% filter(product == "zooglan" & !str_detect(gtdb_classification, "Burkholderia"))
+hyphomicrobium_pel_like <- data %>% filter(product == "pel-like" & str_detect(gtdb_classification, "Hyphomicrobium_B"))
 hyphomicrobium <- fread("../bigscape/REThiNk/strict_core/hyphomicrobium/list.tsv", header = F)
 ```
 
 ```{r}
-hyphomicrobium_data <- data %>% filter(region_id %in% hyphomicrobium$V1) %>% group_by(gene_id) %>% distinct(gene_id, .keep_all = TRUE) %>% select(gene_id, gene_function) %>% mutate(gene_function = ifelse(is.na(gene_function), "NA", gene_function))
 
-fwrite(hyphomicrobium_data, "../bigscape/REThiNk/strict_core/hyphomicrobium/hyphomicrobium_gene_functions.csv")
-
-plot_gene_clusters(data %>% filter(region_id %in% hyphomicrobium$V1), 10, ncol = 2)
+plot_gene_clusters(hyphomicrobium_pel_like, 8, ncol = 2)
 ```
 ## HumGut
 
 ```{r}
 gene_functions <- fread("../epsSMASH_analyses/REThiNk_catalogue/data/gene_functions.tsv")
 
+GOMC_HumGut_tax <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% rename(genome_id = user_genome, gtdb_classification = classification)
 
 data <- fread(
     "../epsSMASH_analyses/HumGut/data/gene_info_HumGut.tsv") %>%
     mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
     group_by(gene_id) %>%
-    filter(bitscore == max(bitscore)) %>%
+    #filter(bitscore == max(bitscore)) %>%
     #distinct(gene_id, .keep_all = TRUE) %>%
     ungroup() %>%
     mutate(
@@ -118,7 +118,16 @@ data <- fread(
         end = as.numeric(end),
         strand = ifelse(strand == "(+)", 1, -1)
     ) %>%
-    left_join(gene_functions, by = c("Query" = "Query"))
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(GOMC_HumGut_tax)
+
+
+prevalent <- data %>% filter(
+    str_detect(gtdb_classification, "g__Blautia|g__Streptococcus|g__Faecalibacterium|g__Lachnoclostridium|g__Clostridium|g__Anaerostipes|g__Ruminococcus|g__Bacteroides|g__Bifidobacterium|g__Escherichia")
+    ) %>% filter(product == "pel-like")
+
+
+plot_gene_clusters(prevalent,8)
 
 ```
 
