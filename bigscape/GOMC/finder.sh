@@ -4,13 +4,17 @@ cut -f 1 epsSMASH_paper/data/GOMC/GOMC_HQ_genome_ids.tsv | while read -r filenam
     dest_dir="epsSMASH_paper/bigscape/GOMC/regions"
     
     if [ -d "$src_dir" ]; then
-        # Copy all region GBK files
-        cp "$src_dir"/*region*.gbk "$dest_dir/" 2>/dev/null
+        # Copy all region GBK files with new names
+        for gbk_file in "$src_dir"/*region*.gbk; do
+            if [ -f "$gbk_file" ]; then
+                base_name=$(basename "$gbk_file")
+                cp "$gbk_file" "$dest_dir/${filename}_${base_name}" 2>/dev/null
+                echo "Copied $gbk_file to $dest_dir/${filename}_${base_name}"
+            fi
+        done
         
-        # Check if any files were copied
-        if [ $? -eq 0 ]; then
-            echo "Copied region files from $filename"
-        else
+        # Check if any files were processed
+        if [ $(ls "$src_dir"/*region*.gbk 2>/dev/null | wc -l) -eq 0 ]; then
             echo "No region files found for $filename"
         fi
     else

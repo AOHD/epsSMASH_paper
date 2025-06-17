@@ -36,7 +36,7 @@ plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "r
       filter(region_id %in% subset_regions) %>%
       ggplot(aes(xmin = start, xmax = end, 
       y = "", 
-      fill = gene_function, forward = strand)) +
+      fill = Query, forward = strand)) +
       geom_gene_arrow() +
       facet_wrap(~ region_id, scales = "free", ncol = ncol) +
       ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
@@ -128,6 +128,71 @@ prevalent <- data %>% filter(
 
 
 plot_gene_clusters(prevalent,8)
+
+```
+### GOMC
+```{r}
+gene_functions <- fread("../epsSMASH_analyses/REThiNk_catalogue/data/gene_functions.tsv")
+
+GOMC_HumGut_tax <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% rename(genome_id = user_genome, gtdb_classification = classification)
+
+data <- fread(
+    "../epsSMASH_analyses/GOMC/data/gene_info_GOMC.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    #filter(bitscore == max(bitscore)) %>%
+    #distinct(gene_id, .keep_all = TRUE) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(GOMC_HumGut_tax)
+
+cellulose_like_list <- list(
+  "OceanDNA-b16201_OceanDNA-b16201_00021_region001",
+  "OceanDNA-b16198_OceanDNA-b16198_00162_region001",
+  "OceanDNA-b16125_OceanDNA-b16125_00069_region001",
+  "OceanDNA-b16103_OceanDNA-b16103_00121_region001",
+  "OceanDNA-b16103_OceanDNA-b16103_00051_region001",
+  "GOMC.bin.9329_k63_70392_region001",
+  "GOMC.bin.9329_k63_125209_region001",
+  "GOMC.bin.8506_k63_1149676_region001",
+  "GOMC.bin.5276_k141_125682_region001",
+  "GOMC.bin.5198_k141_66958_region001",
+  "GOMC.bin.4439_k141_60164_region001",
+  "GOMC.bin.4439_k141_47574_region001",
+  "GOMC.bin.4431_k141_61563_region001",
+  "GOMC.bin.15156_k63_852758_region001",
+  "GOMC.bin.15156_k63_598932_region001",
+  "GOMC.bin.11841_k63_1536442_region001",
+  "GOMC.bin.10095_k63_817436_region001",
+  "GCA_004296455.1_ASM429645v1_genomic_AP018280.1_region001",
+  "GCA_002368095.1_ASM236809v1_genomic_AP018227.1_region011",
+  "GCA_002368095.1_ASM236809v1_genomic_AP018227.1_region008",
+  "GCA_002154725.1_ASM215472v1_genomic_MTAW01000184.1_region001",
+  "GCA_001854205.1_ASM185420v1_genomic_CP017708.1_region006",
+  "GCA_001854205.1_ASM185420v1_genomic_CP017708.1_region005",
+  "GCA_001767235.1_ASM176723v1_genomic_CP017599.1_region004",
+  "GCA_001767235.1_ASM176723v1_genomic_CP017599.1_region003",
+  "GCA_000316665.1_ASM31666v1_genomic_CP003549.1_region013",
+  "GCA_000316665.1_ASM31666v1_genomic_CP003549.1_region004"
+)
+cellulose_like <- data %>% filter(region_id %in% cellulose_like_list)
+
+plot_gene_clusters(cellulose_like %>% filter(genome_id == "GOMC.bin.4439"), 10)
 
 ```
 

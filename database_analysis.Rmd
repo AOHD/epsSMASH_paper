@@ -56,7 +56,8 @@ fwrite(GOMC_HQ_genome_ids, "data/GOMC/GOMC_HQ_genome_ids.tsv")
 
 fwrite(MFD_HQ_genome_ids, "data/MFD/MFD_HQ_genome_ids.tsv")
 
-
+Inner_mongolian_metadata <- read_excel("data/Inner_Mongolian/41564_2022_1270_MOESM4_ESM.xlsx", sheet = 7, skip = 1) %>% filter(MIMAG_HQ == "Y") %>%
+  distinct(Rep_MAG_ID, .keep_all = TRUE)
 
 ```
 
@@ -196,25 +197,196 @@ REThiNk_all_regions <- fread("data/REThiNk/all_regions.tsv") %>%
     )
     ) %>% left_join(REThiNk_all_tax, by = c("genome_id"))
 
+
+###########
+# MFD     #
+###########
+
+MFD_all_tax <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% select(genome_id = bin, gtdb_classification)
+
+MFD_all_regions <- fread("data/MFD/all_regions.tsv") %>%
+  rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) %>% left_join(MFD_all_tax, by = c("genome_id"))
+
+MFD_metadata <- MFD_all_regions %>% 
+  mutate(
+    shared_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk_region_1"),
+    product = ifelse(str_detect(product, "putative"), "Uncharacterised", product)
+    ) %>%
+  separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
+
+fwrite(MFD_metadata, "data/MFD/MFD_metadata.tsv", sep = "\t")
+
+
+###########
+# GOMC    #
+###########
+
+GOMC_all_regions <- fread("data/GOMC/all_regions.tsv") %>%
+  rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) %>% left_join(GOMC_HumGut_tax, by = c("genome_id"))
+
+GOMC_metadata <- GOMC_all_regions %>% 
+  mutate(
+    shared_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk_region_1"),
+    product = ifelse(str_detect(product, "putative"), "Uncharacterised", product)
+    ) %>%
+  separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
+
+fwrite(GOMC_metadata, "data/GOMC/GOMC_metadata.tsv", sep = "\t")
+
+
+####################
+# Inner Mongolians #
+####################
+
+Inner_Mongolian_tax <- read_excel("data/Inner_Mongolian/41564_2022_1270_MOESM4_ESM.xlsx", skip = 1, sheet = 7) %>% rename(genome_id = IMGG_ID)
+
+Inner_Mongolian_all_regions <- fread("data/Inner_Mongolian/all_regions.tsv") %>%
+  rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) %>% left_join(Inner_Mongolian_tax, by = c("genome_id"))
+
+
 #######
 # All #
 #######
 
-l = list(HumGut_all_regions, REThiNk_all_regions)
+l = list(HumGut_all_regions, REThiNk_all_regions, GOMC_all_regions, MFD_all_regions)
 
-all_regions <- rbindlist(l, fill = TRUE) %>%
-  mutate(
-    `Completeness (%)` = ifelse(
-    Database %ni% c("HumGut"), 100, `Completeness (%)`
-  ),
-  `Contamination (%)` = ifelse(
-    Database %ni% c("HumGut"), 1, `Contamination (%)`
-  )
-  )
+all_regions <- rbindlist(l, fill = TRUE)
 
-all_tax <- list(HumGut_tax, REThiNk_all_tax)
-
-all_tax <- rbindlist(all_tax, fill  = TRUE)
 
 
 ```
@@ -224,27 +396,31 @@ all_tax <- rbindlist(all_tax, fill  = TRUE)
 
 ```{r}
 
+HumGut_tax_derep <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
+HumGut_tax_HQ <- HumGut_tax %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
+HumGut_tax_derep_HQ <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
+
+
 HumGut_all_regions_HQ <- HumGut_all_regions %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5)
-HumGut_all_regions_derep <- HumGut_all_regions %>% distinct(cluster95, .keep_all = TRUE)
+HumGut_all_regions_derep <- HumGut_all_regions %>% filter(genome_id %in% HumGut_tax_derep$genome_id)
 # Due to how HumGut asks you to filter for the species representatives at 95% ANI (https://github.com/larssnip/HumGut/blob/main/README.md), it matters that you 
 #derep before you filter for HQ species if you want only the nes designated as species reps. This results in about 200 less MAGs though.
-HumGut_all_regions_derep_HQ <- HumGut_all_regions_derep %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5)
+HumGut_all_regions_derep_HQ <- HumGut_all_regions %>% filter(genome_id %in% HumGut_tax_derep$genome_id) %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5)
 
-HumGut_tax_derep <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
 
 # Outputting tsv of the species representative metadata which will be used to select regions for bigscape analysis and for coloring the network in cytoscape:
 HumGut_metadata <- HumGut_all_regions_derep %>% 
   mutate(
     region_file_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk"),
-    shared_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk_region_1")
+    shared_name = paste0(genome_id, "_", record_id, ".region00", region, ".gbk_region_1"),
+    product = ifelse(Category == "Uncharacterised", "Uncharacterised", product)
     ) %>%
   separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";")
 
 fwrite(HumGut_metadata, "./data/HumGut/HumGut_metadata.tsv", sep = "\t")
 
-HumGut_tax_HQ <- HumGut_tax %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
-HumGut_tax_derep_HQ <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% filter(`Completeness (%)` >= 90, `Contamination (%)` <= 5) %>% mutate(Database = "HumGut") %>% select(genome_id, gtdb_classification, Database)
 
+fwrite(HumGut_tax_derep_HQ %>% select(genome_id), "data/HumGut/HumGut_HQ_derep_genome_ids.tsv")
 
 HumGut_all_regions <- HumGut_all_regions %>%
   mutate(
@@ -324,7 +500,7 @@ p1 + p2 + p3 + p4
 ```{r}
 
 
-REThiNk_derep <- fread("data/REThiNk/derep_MAGs_list.tsv")
+REThiNk_derep <- fread("data/REThiNk/derep_MAGs_list.tsv") %>% filter(genome_id %in% REThiNk_HQ_tax$genome_id)
 
 REThiNk_all_regions <- REThiNk_all_regions %>%
   mutate(
@@ -390,6 +566,14 @@ p1 + p2
 
 fwrite(REThiNk_tax_HQ %>% select(genome_id), "data/REThiNk/REThiNk_HQ_genome_ids.tsv")
 
+```
+### Inner Mongolian
+
+```{r}
+
+Inner_Mongolian_tax_derep <- Inner_Mongolian_tax %>% distinct(Rep_MAG_ID, .keep_all = TRUE)
+
+Inner_Mongolian_all_regions_derep <- Inner_Mongolian_all_regions %>% distinct(Rep_MAG_ID, .keep_all = TRUE)
 ```
 
 
@@ -488,20 +672,20 @@ How many BGCs detected in each database as a % of all genomes?
 
 ```{r}
 
-all_tax_regions_derep <- all_tax_regions_derep %>% group_by(genome_id) %>% mutate(
+all_tax_regions_HQ_derep <- all_tax_regions_HQ_derep %>% group_by(genome_id) %>% mutate(
   region_per_genome = ifelse(is.na(product), 0, length(product))
 ) %>% ungroup()
 
-all_tax_regions_derep %>% ggplot(aes(x = region_per_genome)) +
+all_tax_regions_HQ_derep %>% ggplot(aes(x = region_per_genome)) +
   geom_bar() +
   facet_wrap(~Database)
 
-all_tax_regions_derep %>% ggplot(aes(x = region_per_genome)) +
+all_tax_regions_HQ_derep %>% ggplot(aes(x = region_per_genome)) +
   geom_histogram()
 
 # How many percent of genomes do we detect any BGCs in?
 
-all_tax_regions_derep %>%
+all_tax_regions_HQ_derep %>%
   group_by(Database) %>% 
   mutate(no_genomes = length(unique(genome_id))) %>% 
   ungroup() %>%
@@ -514,7 +698,7 @@ all_tax_regions_derep %>%
   distinct(Database, .keep_all = T)
   
 
-region_stats <- all_regions_derep %>% group_by(Database, genome_id) %>% count() %>% left_join(all_regions) %>% distinct(genome_id, .keep_all = TRUE)
+region_stats <- all_regions_HQ_derep %>% group_by(Database, genome_id) %>% count() %>% left_join(all_regions) %>% distinct(genome_id, .keep_all = TRUE)
 region_stats %>% group_by(Database) %>% summarise(mean = mean(n))
 region_stats %>% group_by(Database) %>% summarise(sd = sd(n))
 region_stats %>% filter(Database == "MiDAS Global") %>% ggplot(aes(x=n)) + geom_bar()
@@ -529,7 +713,7 @@ ggplot(region_stats, aes(x = Database, y = n)) +
 
 ```{r}
 
-Category_distribution <- all_tax_regions_derep %>% 
+Category_distribution <- all_tax_regions_HQ_derep %>% 
   group_by(Database) %>% 
   mutate(no_genomes = length(unique(genome_id))) %>% 
   ungroup() %>%
@@ -539,8 +723,8 @@ Category_distribution <- all_tax_regions_derep %>%
   group_by(Database, no_genomes, Category) %>% count() %>%
   mutate(`% Genomes with EPS BGC` = (n/no_genomes)*100) %>% arrange(desc(`% Genomes with EPS BGC`)) %>%
   ggplot(aes(x = reorder(Database, n, decreasing = FALSE), y = `% Genomes with EPS BGC`, fill = reorder(Category,n))) +
-  geom_bar(stat = "identity") +
-  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0,60)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0,70)) +
   ylab("% Genomes with EPS BGC") +
   xlab("") +
   scale_fill_manual(values = c("#F8766D", "#7CAE00", "#00BFC4", "#C77CFF")) +

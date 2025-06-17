@@ -1,0 +1,659 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(igraph)
+library(stringr)
+library(ggforce)
+library(data.table)
+library(ggupset)
+library(gggenes)
+library(forcats)
+library(ape)
+library(RColorBrewer)
+library(svglite)
+library(aplot)
+library(ggh4x)
+library(treeio)
+library(ggtree)
+library(ggtreeExtra)
+library(readxl)
+library(patchwork)
+library(RColorBrewer)
+
+f <- function(pal) brewer.pal(brewer.pal.info[pal, "maxcolors"], pal)
+(cols <- f("Set2"))
+
+scale_fill_discrete <- function(...) {
+   scale_fill_manual(..., values = (cols <- f("Set2")))
+} 
+`%ni%` <- Negate(`%in%`)
+```
+
+```{r}
+
+epsSMASH_shortread <- fread("../epsSMASH_analyses/SPMP/data/epsSMASH_results_SPMP_shortread/all_regions.tsv") %>% 
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    )
+
+SPMP_shortread <- readxl::read_excel("data/SPMP/41467_2022_33782_MOESM6_ESM.xlsx", sheet = 1) %>% select(file = 1,2,3,4) %>%
+    mutate(
+    MAG_status = ifelse(`Completeness (%)` >= 90 & `Contamination (%)` <= 5, "HQ", "MQ"),
+    sequencing = "Short-read"
+    ) %>% left_join(epsSMASH_shortread)
+
+epsSMASH_hybrid <- fread("../epsSMASH_analyses/SPMP/data/epsSMASH_results_SPMP_hybrid/all_regions.tsv") %>% 
+  mutate(
+    file = str_replace(file, "TLL", "SPMP")
+    ) %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) 
+
+SPMP_hybrid <- readxl::read_excel("data/SPMP/41467_2022_33782_MOESM6_ESM.xlsx", sheet = 2) %>% select(file = 1,2,3,4) %>%
+    mutate(
+    MAG_status = ifelse(`Completeness (%)` >= 90 & `Contamination (%)` <= 5, "HQ", "MQ"),
+    sequencing = "Hybrid"
+    ) %>% left_join(epsSMASH_hybrid)
+
+
+# Create base dataframe with common transformations
+base_df <- rbind(SPMP_shortread, SPMP_hybrid) %>%
+  mutate(
+    BGC_length = as.integer(end - start),
+    Complete = !contig_edge,
+    identifier = paste(file, sequencing, MAG_status)
+  )
+
+# Get distinct genomes for BGC/MAG calculations
+distinct_genomes <- base_df %>% 
+  distinct(identifier, .keep_all = TRUE) %>% 
+  select(-identifier)
+
+# Calculate percentage complete BGCs
+epsSMASH_SPMP_perc <- base_df %>%
+  filter(!is.na(Category)) %>%
+  group_by(sequencing, MAG_status, Category, n_Category) %>%
+  summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+  bind_rows(
+    base_df %>%
+      filter(!is.na(Category)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+      mutate(Category = "All", n_Category = 0)
+  )
+
+# Calculate exoPS BGCs/MAGs for all categories in one operation
+categories <- c("All", "Uncharacterised", "Synthase", "Wzx/Wzy", "Sucrase")
+n_categories <- c(0, 1, 2, 3, 4)
+
+epsSMASH_SPMP <- map2_dfr(categories, n_categories, ~ {
+  if (.x == "All") {
+    base_df %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  } else {
+    base_df %>%
+      filter(Category == .x) %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = n()) %>%
+      bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
+      mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  }
+}) %>%
+  left_join(epsSMASH_SPMP_perc, by = c("sequencing", "MAG_status", "Category", "n_Category"))
+
+```
+
+# Eisenhofer comparison article
+
+```{r}
+
+Eisenhofer_metadata <- fread("data/Eisenhofer/genomeInformation.csv") %>% mutate(
+  sequencing = case_when(
+    str_detect(genome, "Hybrid") ~ "Hybrid",
+    str_detect(genome, "hifiasm") ~ "Long-read",
+    str_detect(genome, "subsampled_20Gb") ~ "Short-read",
+    str_detect(genome, "subsampled_40Gb") ~ "Short-read"
+  ),
+  genome = gsub(".fa.gz", "", genome)
+) %>% rename(file = genome)
+
+epsSMASH_Eisenhofer <- fread("data/Eisenhofer/all_regions.tsv", sep = "\t") %>% 
+  left_join(Eisenhofer_metadata) %>%
+  mutate(
+    BGC_length = as.integer(end-start),
+    Complete = ifelse(contig_edge == FALSE, TRUE, FALSE)
+  ) %>%
+  mutate(
+      Sample = gsub(".bin.*", "", file),
+      MAG_status = ifelse(`completeness` >= 90 & `contamination` <= 5, "HQ", "MQ"),
+      MAG_status = ifelse(`completeness` >= 90 & `contamination` <= 5, "HQ", "MQ")
+      ) %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    )
+
+# Create base dataframe with common transformations
+base_df <- epsSMASH_Eisenhofer %>%
+  mutate(
+    BGC_length = as.integer(end - start),
+    Complete = !contig_edge,
+    identifier = paste(file, sequencing, MAG_status)
+  )
+
+# Get distinct genomes for BGC/MAG calculations
+distinct_genomes <- base_df %>% 
+  distinct(identifier, .keep_all = TRUE) %>% 
+  select(-identifier)
+
+# Calculate percentage complete BGCs
+epsSMASH_Eisenhofer_perc <- base_df %>%
+  filter(!is.na(Category)) %>%
+  group_by(sequencing, MAG_status, Category, n_Category) %>%
+  summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+  bind_rows(
+    base_df %>%
+      filter(!is.na(Category)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+      mutate(Category = "All", n_Category = 0)
+  )
+
+# Calculate exoPS BGCs/MAGs for all categories in one operation
+categories <- c("All", "Uncharacterised", "Synthase", "Wzx/Wzy", "Sucrase")
+n_categories <- c(0, 1, 2, 3, 4)
+
+epsSMASH_Eisenhofer <- map2_dfr(categories, n_categories, ~ {
+  if (.x == "All") {
+    base_df %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  } else {
+    base_df %>%
+      filter(Category == .x) %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = n()) %>%
+      bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
+      mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  }
+}) %>%
+  left_join(epsSMASH_Eisenhofer_perc, by = c("sequencing", "MAG_status", "Category", "n_Category"))
+
+
+
+```
+
+
+# MFD
+
+```{r}
+
+MFD_deep_metadata <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% rename(file = bin)
+
+MFD_deep <- fread("data/MFD/all_regions.tsv") %>% 
+  filter(file %in% MFD_deep_metadata$file) %>%
+  left_join(MFD_deep_metadata) %>%
+    mutate(
+      Sample = gsub(".bin.*", "", file),
+      MAG_status = ifelse(`Completeness_CheckM1` >= 90 & `Contamination_CheckM1` <= 5, "HQ", "MQ"),
+      MAG_status = ifelse(`Completeness_CheckM2` >= 90 & `Contamination_CheckM2` <= 5, "HQ", "MQ"),
+      sequencing = "Long-read"
+      ) %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    )
+
+MFD_shallow_metadata <- fread("data/MFD/mags_shallow_drep.tsv") %>% rename(file = bin)
+
+MFD_lib <- fread("data/MFD/MFD_lib.tsv", header = FALSE)
+setnames(MFD_lib, c("Sample", "lib"))
+
+MFD_shallow <- fread("data/MFD/all_regions_shallow.tsv") %>% 
+  mutate(lib = gsub("\\..*", "", file)) %>%
+  left_join(MFD_lib) %>%
+  filter(Sample %in% MFD_deep$Sample) %>%
+  left_join(MFD_shallow_metadata) %>%
+  mutate(
+    MAG_status = ifelse(`Completeness_CheckM1` >= 90 & `Contamination_CheckM1` <= 5, "HQ", "MQ"),
+    MAG_status = ifelse(`Completeness_CheckM2` >= 90 & `Contamination_CheckM2` <= 5, "HQ", "MQ"),
+    sequencing = "Short-read"
+  ) %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    )
+
+
+# Create base dataframe with common transformations
+base_df <- rbind(MFD_deep, MFD_shallow, fill = TRUE) %>%
+  mutate(
+    BGC_length = as.integer(end - start),
+    Complete = !contig_edge,
+    identifier = paste(file, sequencing, MAG_status)
+  )
+
+# Get distinct genomes for BGC/MAG calculations
+distinct_genomes <- base_df %>% 
+  distinct(identifier, .keep_all = TRUE) %>% 
+  select(-identifier)
+
+# Calculate percentage complete BGCs
+epsSMASH_MFD_perc <- base_df %>%
+  filter(!is.na(Category)) %>%
+  group_by(sequencing, MAG_status, Category, n_Category) %>%
+  summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+  bind_rows(
+    base_df %>%
+      filter(!is.na(Category)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+      mutate(Category = "All", n_Category = 0)
+  )
+
+# Calculate exoPS BGCs/MAGs for all categories in one operation
+categories <- c("All", "Uncharacterised", "Synthase", "Wzx/Wzy", "Sucrase")
+n_categories <- c(0, 1, 2, 3, 4)
+
+epsSMASH_MFD <- map2_dfr(categories, n_categories, ~ {
+  if (.x == "All") {
+    base_df %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  } else {
+    base_df %>%
+      filter(Category == .x) %>%
+      group_by(file, sequencing, MAG_status) %>%
+      mutate(BGCs = n()) %>%
+      bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
+      mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
+      group_by(sequencing, MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  }
+}) %>%
+  left_join(epsSMASH_MFD_perc, by = c("sequencing", "MAG_status", "Category", "n_Category"))
+
+
+```
+
+### Plotting
+```{r}
+
+epsSMASH_Eisenhofer_combined <- unite(epsSMASH_Eisenhofer, col = "sequencing+quality", c("sequencing", "MAG_status"), sep = ", ")
+
+epsSMASH_MFD_combined <- unite(epsSMASH_MFD, col = "sequencing+quality", c("sequencing", "MAG_status"), sep = ", ") 
+
+epsSMASH_SPMP_combined <- unite(epsSMASH_SPMP, col = "sequencing+quality", c("sequencing", "MAG_status"), sep = ", ")
+
+myColors <- brewer.pal(6, "Spectral")
+
+names(myColors) <- c("Short-read, MQ", "Short-read, HQ", "Hybrid, MQ", "Hybrid, HQ", "Long-read, MQ", "Long-read, HQ")
+custom_colors <- scale_fill_manual(name = "sequencing and quality", values = myColors, drop = FALSE)
+
+
+MFD_BGC_MAG <- ggplot(epsSMASH_MFD_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, `exoPS BGCs/MAGs`, fill = `sequencing+quality`, y = `exoPS BGCs/MAGs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  ggtitle("MFD") +
+  xlab("") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    legend.position = "none",
+    title = element_text(size = 20)
+  )
+
+MFD_perc <- ggplot(epsSMASH_MFD_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, fill = `sequencing+quality`, y = `% complete exoPS BGCs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  xlab("") +
+  ylim(0, 100) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.title.y = element_text(size = 16),
+    legend.position = "none"
+  )
+
+
+
+
+SPMP_BGC_MAG <- ggplot(epsSMASH_SPMP_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, fill = `sequencing+quality`, y = `exoPS BGCs/MAGs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  ggtitle("SPMP") +
+  xlab("") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    title = element_text(size = 20)
+  )
+
+
+SPMP_perc <- ggplot(epsSMASH_SPMP_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, `% complete exoPS BGCs`, fill = `sequencing+quality`, y = `% complete exoPS BGCs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  xlab("") +
+  ylim(0, 100) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+
+Eisenhofer_BGC_MAG <- ggplot(epsSMASH_Eisenhofer_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, fill = `sequencing+quality`, y = `exoPS BGCs/MAGs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  ggtitle("Eisenhofer et al.") +
+  xlab("") +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank(),
+    legend.text = element_text(size = 16),
+    legend.title = element_text(size = 16),
+    title = element_text(size = 20)
+  )
+
+
+Eisenhofer_perc <- ggplot(epsSMASH_Eisenhofer_combined %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), aes(x = Category, fill = `sequencing+quality`, y = `% complete exoPS BGCs`)) +
+  geom_col(position = "dodge2") +
+  custom_colors +
+  xlab("") +
+  ylim(0, 100) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    axis.title.y = element_blank()
+  )
+
+
+sequencing <- (MFD_BGC_MAG | SPMP_BGC_MAG | Eisenhofer_BGC_MAG)/(MFD_perc | SPMP_perc | Eisenhofer_perc)
+
+(MFD_BGC_MAG | SPMP_BGC_MAG | Eisenhofer_BGC_MAG)/(MFD_perc | SPMP_perc | Eisenhofer_perc)
+
+ggsave("figures/all/sequencing_comparison.png", dpi = 300, sequencing, width = 20, height = 15)
+
+
+
+
+```
+
+```{r}
+# Function to create the combined plots
+create_combined_plot <- function(data, title_text) {
+  ggplot(data %>% mutate(`sequencing+quality` = factor(`sequencing+quality`, levels=names(myColors))), 
+         aes(x = Category, y = `exoPS BGCs/MAGs`, fill = `sequencing+quality`)) +
+    # Main bar (full height)
+    geom_col(position = position_dodge2(width = 0.9), alpha = 0.3, width = 0.8) +
+    # Filled portion based on completeness percentage
+    geom_rect(
+      aes(xmin = as.numeric(factor(Category)) - 0.4, 
+          xmax = as.numeric(factor(Category)) + 0.4,
+          ymin = 0, 
+          ymax = `exoPS BGCs/MAGs` * (`% complete exoPS BGCs`/100),
+          group = interaction(Category, `sequencing+quality`)),
+      position = position_dodge2(width = 0.9)
+    ) +
+    scale_fill_manual(name = "Sequencing and quality", values = myColors, drop = FALSE) +
+    ggtitle(title_text) +
+    xlab("") +
+    ylab("exoPS BGCs/MAGs") +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+      axis.text.y = element_text(size = 12),
+      axis.title.y = element_text(size = 14),
+      legend.position = "right",
+      plot.title = element_text(size = 16, hjust = 0.5),
+      panel.grid.major.x = element_blank()
+    )
+}
+
+# Create plots for each dataset
+MFD_combined <- create_combined_plot(epsSMASH_MFD_combined, "MFD") + 
+  theme(legend.position = "none")
+
+SPMP_combined <- create_combined_plot(epsSMASH_SPMP_combined, "SPMP") + 
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank(),
+        legend.position = "none")
+
+Eisenhofer_combined <- create_combined_plot(epsSMASH_Eisenhofer_combined, "Eisenhofer et al.") +
+  theme(axis.text.y = element_blank(),
+        axis.title.y = element_blank())
+
+# Combine all plots
+combined_plot <- (MFD_combined | SPMP_combined | Eisenhofer_combined)
+
+# Display the plot
+combined_plot
+
+ggsave("figures/all/sequencing_comparison_combined_plots.png", combined_plot, dpi = 300, height = 5, width = 20)
+```
+

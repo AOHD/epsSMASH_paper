@@ -4,3 +4,5 @@ data/GTDB220_HumGut_GOMC/*
 !data/GTDB220_HumGut_GOMC/GOMC-HumGut.gtdb.R220.classification.tsv
 bigscape/*/regions
 bigscape/*/output
+bigscape/*/output_2
+bigscape/*/analysis
