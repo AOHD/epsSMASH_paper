@@ -1,0 +1,185 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(igraph)
+library(stringr)
+library(ggforce)
+library(data.table)
+library(ggupset)
+library(gggenes)
+library(forcats)
+library(ape)
+library(RColorBrewer)
+library(svglite)
+library(aplot)
+library(ggh4x) 
+library(treeio)
+library(ggtree)
+library(ggtreeExtra)
+library(readxl)
+
+`%ni%` <- Negate(`%in%`)
+```
+
+```{r}
+
+IMGG_tax <- read_excel("data/IMGG/41564_2022_1270_MOESM4_ESM.xlsx", skip = 1, sheet = 7) %>% rename(genome_id = IMGG_ID) %>% mutate(MAG_status = ifelse(HQ == "Y", "HQ", "MQ"))
+
+IMGG_all_regions <- fread("data/IMGG/all_regions.tsv") %>%
+  rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) %>% left_join(IMGG_tax, by = c("genome_id"))  %>%
+    mutate(Database = "IMGG")
+
+IMGG_tax_derep_HQ <- IMGG_tax %>% filter(HQ == "Y") %>% distinct(Rep_MAG_ID, .keep_all = TRUE)
+
+IMGG_all_regions_derep <- IMGG_all_regions %>% filter(genome_id %in% IMGG_tax_derep_HQ$genome_id)
+
+
+```
+
+# % of complete BGCs in the HQ species representatives and the number of BGCs/MAGs
+```{r}
+
+# Create base dataframe with common transformations
+base_df <- IMGG_all_regions_derep %>%
+  right_join(IMGG_tax_derep_HQ) %>%
+  mutate(
+    BGC_length = as.integer(end - start),
+    Complete = !contig_edge,
+    identifier = paste(genome_id, MAG_status)
+  )
+
+# Get distinct genomes for BGC/MAG calculations
+distinct_genomes <- base_df %>% 
+  distinct(identifier, .keep_all = TRUE) %>% 
+  select(-identifier)
+
+# Calculate percentage complete BGCs
+percentage <- base_df %>%
+  filter(!is.na(Category)) %>%
+  group_by(MAG_status, Category, n_Category) %>%
+  summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+  bind_rows(
+    base_df %>%
+      filter(!is.na(Category)) %>%
+      group_by(MAG_status) %>%
+      summarise(`% complete exoPS BGCs` = round(mean(Complete), 5) * 100, .groups = "drop") %>%
+      mutate(Category = "All", n_Category = 0)
+  )
+
+# Calculate exoPS BGCs/MAGs for all categories in one operation
+categories <- c("All", "Uncharacterised", "Synthase", "Wzx/Wzy", "Sucrase")
+n_categories <- c(0, 1, 2, 3, 4)
+
+epsSMASH_IMGG <- map2_dfr(categories, n_categories, ~ {
+  if (.x == "All") {
+    base_df %>%
+      group_by(genome_id, MAG_status) %>%
+      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      group_by(MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  } else {
+    base_df %>%
+      filter(Category == .x) %>%
+      group_by(genome_id, MAG_status) %>%
+      mutate(BGCs = n()) %>%
+      bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
+      mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
+      group_by(MAG_status) %>%
+      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      mutate(Category = .x, n_Category = .y)
+  }
+}) %>%
+  left_join(percentage, by = c("MAG_status", "Category", "n_Category"))
+
+
+```
+# Plotting the stats for IMGG epsSMASH results
+```{r}
+
+myColors <- "#1F78B4"
+
+names(myColors) <- c("HQ")
+custom_colors <- scale_fill_manual(name = "MAG Quality", values = myColors, drop = FALSE)
+
+# Function to create the combined plots
+create_combined_plot <- function(data, title_text) {
+  # Transform the data
+  plot_data <- data %>% 
+    mutate(MAG_status = factor(MAG_status, levels = names(myColors)))
+  
+  ggplot(plot_data, aes(x = Category, y = `exoPS BGCs/MAGs`, fill = MAG_status)) +
+    # Main bar (full height)
+    geom_col(position = position_dodge2(width = 0.9), alpha = 0.3, width = 0.8) +
+    # Filled portion based on completeness percentage
+    geom_rect(
+      aes(xmin = as.numeric(factor(Category)) - 0.4, 
+          xmax = as.numeric(factor(Category)) + 0.4,
+          ymin = 0, 
+          ymax = `exoPS BGCs/MAGs` * (`% complete exoPS BGCs`/100),
+          group = interaction(Category, MAG_status)),
+      position = position_dodge2(width = 0.9)
+    ) +
+    scale_fill_manual(name = "Quality", values = myColors, drop = FALSE) +
+    ggtitle(title_text) +
+    xlab("") +
+    ylab("exoPS BGCs/MAGs") +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+      axis.text.y = element_text(size = 12),
+      axis.title.y = element_text(size = 14),
+      legend.position = "right",
+      plot.title = element_text(size = 16, hjust = 0.5),
+      panel.grid.major.x = element_blank()
+    )
+}
+
+# Create plots for each dataset
+IMGG_combined <- create_combined_plot(epsSMASH_IMGG %>% filter(!is.na(`% complete exoPS BGCs`)), "") 
+IMGG_combined
+```

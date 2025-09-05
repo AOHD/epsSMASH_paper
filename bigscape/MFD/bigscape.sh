@@ -4,10 +4,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=shared
-#SBATCH --cpus-per-task=150
+#SBATCH --partition=general
+#SBATCH --cpus-per-task=60
 #SBATCH --mem=200G
-#SBATCH --time=0-06:00:00
+#SBATCH --time=1-00:00:00
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=aohd@bio.aau.dk
 
@@ -18,4 +18,4 @@ conda activate bigscape
 
 cd /home/bio.aau.dk/zs85xk/projects/epsSMASH/
 
-bigscape cluster -i epsSMASH_paper/bigscape/MFD/regions -o epsSMASH_paper/bigscape/MFD/output_2 -p bigscape/pfam/Pfam-A.hmm -c 150 --force-gbk --gcf-cutoffs 0.4
+bigscape cluster -i /home/bio.aau.dk/zs85xk/projects/epsSMASH/epsSMASH_paper/bigscape/MFD/regions -o epsSMASH_paper/bigscape/MFD/output -p bigscape/pfam/Pfam-A.hmm -c 60 --force-gbk --gcf-cutoffs 0.4

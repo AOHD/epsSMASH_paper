@@ -1,0 +1,263 @@
+# Loading libraries
+```{r, setup}
+library(ggtree)
+library(ggtreeExtra)
+library(ggplot2)
+library(gggenes)
+library(tidyverse)
+library(data.table)
+library(tidytree)
+library(stringr)
+library(phangorn)
+`%ni%` <- Negate(`%in%`)
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly = TRUE)
+```
+
+# Creating the phylogenomic tree with associated heatmap
+## Loading data
+```{r}
+
+# Loading the tree
+tree <- read.tree("data/sphingomonadales/MSA_sphingomonadales_tree_subset_for_IQtree.faa.treefile")
+
+# Loading taxonomy
+taxonomy <- fread("data/sphingomonadales/gtdb_taxonomy.tsv", sep = "\t", header = FALSE, col.names = c("id", "taxonomy")) %>%
+    mutate(
+        id = str_remove_all(id, "RS_")
+    ) %>%
+    separate(taxonomy, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";")
+
+# Attaching taxonomy to the tree
+tree_tib <- as_tibble(tree) %>% 
+    mutate(
+        label = str_remove_all(label, "_ASM.*"),
+        label = str_remove_all(label, "RS_"),
+        record = label
+    )
+
+
+# Loading epsSMASH results
+epssmash_overview <- fread("data/sphingomonadales/region_counts.tsv", sep = "\t") %>%
+  mutate(
+      `Sphingomonadaceae EPS` = ifelse(sphingomonadaceae_eps == 1, TRUE, FALSE),
+      record = gsub("_ASM.*|_IMG.*", "", record)
+  ) %>%
+  right_join(tree_tib, by  = "record") %>%
+  mutate(
+    `Sphingomonadaceae EPS` = ifelse(is.na(`Sphingomonadaceae EPS`), FALSE, `Sphingomonadaceae EPS`)
+  )
+
+tree <- as.phylo(tree_tib %>% select(parent, node, branch.length, label, record))
+```
+
+## Plotting the tree
+```{r}
+
+
+p <- ggtree(tree, layout = "circular") %<+% taxonomy + 
+  geom_text(aes(label=node), hjust=-.3) +
+  geom_tiplab(aes(label = species), size = 2)
+
+
+p_sphingomonadaceae <- ggtree(tree, layout = "circular") +
+  geom_fruit(
+    data = epssmash_overview,
+    geom = geom_tile,
+    mapping = aes(y = label, fill = `Sphingomonadaceae EPS`),
+    inherit.aes = FALSE,  # This goes in geom_fruit, not geom_tile
+    width = 0.1,
+    pwidth = 0.1
+  ) +
+  geom_cladelabel(node=667, label="Qipengyuania", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=642, label="Erythrobacter", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=720, label="Tsuneonella", offset=0.2, align=TRUE) + 
+  geom_cladelabel(node=729, label="Alteraurantiacibacter", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=751, label="Croceibacterium", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=764, label="Croceicoccus", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=563, label="Novosphingobium", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=780, label="Sphingorabdus_B", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=793, label="Sphingopyxis", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=814, label="Sphingobium", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=977, label="Sphingomonas B+D+K+L", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=863, label="Sphingomonas", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=987, label="Sphingomonas I+G+H+R+Q", offset=0.2, align=TRUE) + 
+  geom_cladelabel(node=1007, label="Sphingomonas N", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=1015, label="Sphingomicrobium", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=1057, label="Allosphingosinicella", offset=0.2, align=TRUE) +
+  geom_cladelabel(node=1073, label="Sandarakinorhabdus", offset=0.2, align=TRUE) +
+  scale_fill_brewer(palette = "Set2")
+
+
+suppressWarnings({ggsave("figures/all/Fig5_A.svg", p_sphingomonadaceae, width = 10, height = 10)})
+
+```
+
+# Creating the gene clusters from largest genera
+## Loading the data
+```{r}
+
+# Loading epsSMASH results
+epssmash_overview <- fread("data/sphingomonadales/region_counts.tsv", sep = "\t") %>%
+  mutate(
+      `Sphingomonadaceae EPS` = ifelse(sphingomonadaceae_eps == 1, TRUE, FALSE),
+      record = gsub("_ASM.*|_IMG.*", "", record)
+  ) %>%
+  mutate(
+    `Sphingomonadaceae EPS` = ifelse(is.na(`Sphingomonadaceae EPS`), FALSE, `Sphingomonadaceae EPS`)
+  )
+
+gene_functions <- fread("data/gene_functions.tsv")
+
+data <- fread(
+    "data/sphingomonadales/gene_info_picked.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    filter(product == "sphingomonadaceae_eps") %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(epssmash_overview %>% filter(!is.na(record)) %>% select(record, description))
+
+# Function which plots all the selected gene clusters (every gene cluster in an order for example)
+# The function takes a subset size as input, which is the number of gene clusters to plot in each plot
+plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "right") {
+  # Get the unique regions
+  unique_regions <- unique(data$region_id)
+  
+  # Calculate the number of subsets
+  num_subsets <- ceiling(length(unique_regions) / subset_size)
+  
+  # Loop over each subset
+  for(i in seq_len(num_subsets)) {
+    # Calculate the indices for this subset
+    start_index <- ((i - 1) * subset_size) + 1
+    end_index <- min(i * subset_size, length(unique_regions))
+    
+    # Get the regions for this subset
+    subset_regions <- unique_regions[start_index:end_index]
+    
+    # Filter the data for these regions and plot
+    plot <- data %>%
+      mutate(strand = ifelse(strand == 1, TRUE, FALSE)) %>%
+      filter(region_id %in% subset_regions) %>%
+      ggplot(aes(xmin = start, xmax = end, 
+      y = "", 
+      fill = pfam_hit, forward = strand)) +
+      geom_gene_arrow() +
+      facet_wrap(~ description, scales = "free", ncol = ncol) +
+      ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
+      theme(legend.position = legend_position)
+    print(plot)
+  }
+}
+
+
+# Sphingopyxis granuli GCF_001559015.1
+# Qipengyuania flava GCF_008932225.1
+# Erythrobacter ramosus GCF_014195675.1
+# Alteraurantiacibacter buctensis GCF_009827655.1
+# Novosphingobium aromaticivorans GCF_000013325.1
+# Sphingobium indicum GCF_000091125.1
+# Sphingomonas paucimobilis GCF_000787715.1
+
+data_filtered <- data %>% 
+  filter(str_detect(genome_id, "GCF_001559015.1|GCF_008932225.1|GCF_014195675.1|GCF_009827655.1|GCF_000013325.1|GCF_000091125.1|GCF_000787715.1"), str_detect(Query, "sphing"), !str_detect(Query, "sphingan")) %>%
+  separate(pfam_hit, into = c("pfam_hit", "pfam_stats"), sep = "\\: \\[") %>%
+  separate(pfam_hit, into = c("pfam", "pfam_desc"), sep = "\\s", extra = "merge") %>%
+  separate(description, into = c("accession", "rest"), sep = "\\s", extra = "merge") %>%
+  separate(rest, into = c("genus", "species", "rest"), sep = " ", extra = "merge") %>%
+  separate(pfam_stats, into = c("pfam_location", "pfam_score"), sep = "\\] ") %>%
+  separate(pfam_location, into = c("pfam_start", "pfam_end"), sep = ":") %>%
+  mutate(
+    taxonomy = paste(genus, species),
+    pfam_desc = gsub("\\(|\\)", "", pfam_desc),
+    pfam_desc = gsub(" C-terminal domain", "", pfam_desc),
+    pfam_desc = gsub("Glycosyl.*", "Glycosyltransferase", pfam_desc),
+    strand = ifelse(strand == 1, TRUE, FALSE),
+    pfam_desc = ifelse(pfam_desc %in% c("Domain of unknown function DUF3473", "Protein of unknown function DUF3485"), "Domain/protein of unknown function", pfam_desc),
+    pfam_start = ifelse(!is.na(pfam_start), start+as.integer(pfam_start), pfam_start),
+    pfam_end = ifelse(!is.na(pfam_end), start+as.integer(pfam_end), pfam_end),
+    pfam_start = as.integer(pfam_start),
+    pfam_end = as.integer(pfam_end)
+         )
+
+
+flip_cluster <- function(df, cluster_name) {
+  cluster_genes <- df[df$contig_id == cluster_name, ]
+  max_end <- max(cluster_genes$end)
+  
+  cluster_genes %>%
+    mutate(
+      new_start = max_end - end + 1,
+      new_end = max_end - start + 1,
+      new_pfam_start  = max_end - pfam_start + 1,
+      new_pfam_end = max_end - pfam_end + 1,
+      start = new_start,
+      end = new_end,
+      pfam_start = new_pfam_start,
+      pfam_end = new_pfam_end,
+      strand = ifelse(strand == TRUE, FALSE, TRUE)
+    ) %>%
+    select(-new_start, -new_end)
+}
+
+
+genes_flipped <- bind_rows(
+  data_filtered %>% filter(contig_id %in% c("NC_014006.1", "NZ_JACICE010000002.1")),
+  flip_cluster(data_filtered, "NC_007794.1"),
+  flip_cluster(data_filtered, "NZ_BBPI01000012.1"),
+  flip_cluster(data_filtered, "NZ_CP012199.1"),
+  flip_cluster(data_filtered, "NZ_CP032228.1"),
+  flip_cluster(data_filtered, "NZ_WTYV01000004.1")
+) %>% 
+  mutate(Query = gsub("_sphingomonadaceae", "", Query)) %>%
+  left_join(fread("data/sphingomonadales/annotations.csv", sep = ","))
+  
+genes_flipped$middle <- (genes_flipped$start + genes_flipped$end) / 2
+
+dummies <- make_alignment_dummies(
+  genes_flipped,
+  aes(xmin = start, xmax = end, y = taxonomy, id = Query),
+  on = "sphingA"
+) %>%
+  left_join(fread("data/sphingomonadales/annotations.csv", sep = ","))
+
+dummies$middle <- (dummies$start + dummies$end) / 2
+
+
+gene_arrows <- ggplot(genes_flipped, 
+                      aes(xmin = start, xmax = end, x = middle, y = taxonomy, fill = Annotation, forward = strand,  label = Query)
+                      ) +
+  geom_gene_arrow() +
+  geom_blank(data = dummies, aes(forward = 1)) +
+  geom_text(angle = 45, hjust = 1.45, size = 4) +
+  scale_fill_brewer(palette = "Paired", na.value = "grey50") +
+  facet_wrap(~ taxonomy, scales = "free", ncol = 1) +
+  theme_genes() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+  )
+
+ggsave("figures/all/Fig5_B.svg", gene_arrows, width = 12, height = 12)
+```
+
+
+

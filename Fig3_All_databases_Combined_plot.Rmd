@@ -1,0 +1,142 @@
+```{r}
+create_combined_plot <- function(data, title_text) {
+  
+  # Transform data
+  plot_data <- data %>% 
+    mutate(Database = factor(Database, levels=names(myColors))) %>%
+    mutate(Category = factor(Category, levels=categories))
+  
+  ggplot(plot_data, 
+         aes(x = Category, y = `exoPS BGCs/MAGs`, fill = Database)) +
+    # Main bar (full height) - now with alpha mapped to a label
+    geom_col(aes(alpha = "Total BGCs"), 
+             position = position_dodge2(width = 0.9), width = 0.8) +
+    # Filled portion based on completeness percentage - alpha mapped to another label
+    geom_rect(
+      aes(xmin = as.numeric(factor(Category)) - 0.4, 
+          xmax = as.numeric(factor(Category)) + 0.4,
+          ymin = 0, 
+          ymax = `exoPS BGCs/MAGs` * (`% complete exoPS BGCs`/100),
+          group = interaction(Database, MAG_status),
+          alpha = "Complete BGCs"),
+      position = position_dodge2(width = 0.9)
+    ) +
+    scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
+    scale_alpha_manual(name = "BGC Status", 
+                  values = c("Total BGCs" = 0.3, "Complete BGCs" = 1)) +
+    ggtitle(title_text) +
+    xlab("") +
+    ylab("exoPS BGCs/MAGs") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 20),
+      axis.text.y = element_text(size = 20),
+      axis.title.y = element_text(size = 20),
+      legend.position = "right",
+      plot.title = element_text(size = 24, hjust = 0.5),
+      panel.grid.major.x = element_blank(),
+      legend.text=element_text(size=20),
+      legend.title=element_text(size=24)
+    )
+}
+```
+
+```{r}
+
+epsSMASH_combined <- rbind(
+  epsSMASH_GOMC %>% mutate(Database = "GOMC"),
+  epsSMASH_MiDAS %>% mutate(Database = "MiDAS"),
+  epsSMASH_HumGut %>% mutate(Database = "HumGut"),
+  epsSMASH_MFD %>% mutate(Database = "MFD"))
+
+
+myColors <- brewer.pal(4, "Set2")
+
+names(myColors) <- c(
+  "MFD", "MiDAS", "GOMC", "HumGut"
+ )
+custom_colors <- scale_fill_manual(name = "Database", values = myColors, drop = FALSE)
+
+Fig3A <- create_combined_plot(epsSMASH_combined, "")
+
+ggsave("figures/all/Fig3A.png", Fig3A, dpi = 300, height = 8, width = 16)
+```
+
+```{r}
+all_regions <- rbind(
+  GOMC_all_regions %>% right_join(GOMC_HumGut_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "GOMC"),
+  MiDAS_all_regions %>% right_join(MiDAS_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "MiDAS"),
+  HumGut_all_regions %>% right_join(HumGut_tax_HQ_derep) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "HumGut"),
+  MFD_all_regions %>% right_join(MFD_tax_derep_HQ)  %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "MFD") 
+) %>%
+  ungroup() %>%
+  group_by(Database, genome_id) %>%
+  mutate(BGCs =  ifelse(is.na(product), 0,n()))
+
+
+all_regions_distinct_genome_id <- all_regions%>% group_by(Database) %>% distinct(genome_id, .keep_all = TRUE) %>%
+  mutate(no_genomes = n()) %>% ungroup() %>%
+  group_by(Database, BGCs) %>%
+  mutate(p_BGC = n()/no_genomes*100) %>%
+  distinct(BGCs, .keep_all = TRUE) %>%
+  mutate(Database = factor(Database, levels=names(myColors)))
+
+
+
+BGC_sizes_normal <- all_regions_distinct_genome_id %>% ggplot(
+  aes(x = BGCs, y = p_BGC, fill = Database)
+) + geom_col(position = position_dodge2(width = 0.9)) +
+  facet_wrap(~ Database, ncol = 1) +
+  scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
+  scale_x_continuous(breaks = seq(0, 8, by = 2)) +
+  scale_y_continuous(breaks = seq(0, 50, by = 10)) +
+  coord_cartesian(xlim = c(0, 8), ylim = c(0, 50)) +
+  ylab("Percentage of MAGs with # of BGCs/MAG") +
+  xlab("BGCs/MAG") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank(),
+  axis.text.x = element_text(hjust = 1, size = 20),
+  axis.title.x = element_text(size = 20),
+  axis.text.y = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  legend.position = "none",
+  plot.title = element_text(size = 24, hjust = 0.5),
+  panel.grid.major.x = element_blank(),
+  legend.text=element_text(size=20),
+  legend.title=element_text(size=24)
+  )
+
+BGC_sizes_extreme <-all_regions_distinct_genome_id %>% ggplot(
+  aes(x = BGCs, y = p_BGC, fill = Database)
+) + geom_col(position = position_dodge2(width = 0.9)) +
+  facet_wrap(~ Database, ncol  = 1) +
+  scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
+  scale_x_continuous(breaks = seq(0, 20, by = 2)) +
+  scale_y_continuous(breaks = seq(0, 0.25, by = 0.1)) +
+  coord_cartesian(xlim = c(9, 20), ylim = c(0, 0.25)) +
+  xlab("BGCs/MAG") +
+  theme_bw() +
+  theme(
+  strip.background = element_blank(),
+  strip.text.x = element_blank(),
+  axis.text.x = element_text(hjust = 1, size = 20),
+  axis.title.x = element_text(size = 20),
+  axis.text.y = element_text(size = 20),
+  axis.title.y = element_blank(),
+  legend.position = "none",
+  plot.title = element_text(size = 24, hjust = 0.5),
+  panel.grid.major.x = element_blank(),
+  legend.text=element_text(size=20),
+  legend.title=element_text(size=24)
+  )
+
+BGC_sizes_all <- BGC_sizes_normal | BGC_sizes_extreme
+
+fwrite(all_regions %>% select(-BGCs) %>% arrange(gtdb_classification) %>% filter(!is.na(product)), "data/supplemental_data/all_BGCs_all_databases.tsv", sep = "\t")
+
+ggsave("figures/all/Fig3B.png", BGC_sizes_all, dpi = 300, height = 20, width  = 20)
+```
+
+
