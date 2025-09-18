@@ -17,7 +17,7 @@ I want to compare the Synthase-prediction capabilities of epsSMASH to the Bundal
 
 ```{r}
 
-epsSMASH_all_regions <- fread("../epsSMASH_analyses/Bundalovic-Torma/data/epsSMASH_results_Bundalovic-Torma/all_regions.tsv") %>%
+epsSMASH_all_regions <- fread("data/Bundalovic-Torma/all_regions.tsv") %>%
   filter(str_detect(product, 
       "cellulose|pel-positive|pel|alginate|PNAG-ica|PNAG-pga")) %>% select(Sp_ID = file, epsSMASH = product) %>%
   group_by(Sp_ID) %>%
@@ -110,7 +110,7 @@ Bundalovic_regions <- read_excel("data/Bundalovic-Torma/pcbi.1007721.s009.xlsx",
   mutate(Bundalovic = ifelse(Bundalovic=="Acetylated-Cellulose", "Acetylated cellulose", Bundalovic))%>%
   mutate(compare = paste0(Sp_ID, Bundalovic)) %>% select(compare,Bundalovic)
 
-epsSMASH_Bundalovic_all_regions <- fread("../epsSMASH_analyses/Bundalovic-Torma/data/epsSMASH_results_Bundalovic-Torma/all_regions.tsv") %>%
+epsSMASH_Bundalovic_all_regions <- fread("data/Bundalovic-Torma//all_regions.tsv") %>%
   filter(str_detect(product, 
       "cellulose|pel-positive|pel|alginate|PNAG-ica|PNAG-pga")) %>% 
   filter(product %ni% c("cyanocellulose", "cellulose-gram-positive", "cellulose-gram-positive-like")) %>%
@@ -132,7 +132,7 @@ epsSMASH_Bundalovic_all_regions <- fread("../epsSMASH_analyses/Bundalovic-Torma/
   exoPS = ifelse(is.na(Bundalovic), epsSMASH, Bundalovic),
   Detection = case_when(
     is.na(Bundalovic) & !is.na(epsSMASH) ~ "epsSMASH",
-    !is.na(Bundalovic) & is.na(epsSMASH) ~ "Bundalovic",
+    !is.na(Bundalovic) & is.na(epsSMASH) ~ "Bundalovic-Torma et al. (2020)",
     !is.na(Bundalovic) & !is.na(epsSMASH) ~ "Both",
     is.na(Bundalovic) & is.na(epsSMASH) ~ "none"
     )
@@ -140,11 +140,11 @@ epsSMASH_Bundalovic_all_regions <- fread("../epsSMASH_analyses/Bundalovic-Torma/
   
 
 ggplot(epsSMASH_Bundalovic_all_regions %>% group_by(Detection, exoPS) %>% count() %>%
-  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Bundalovic", "Both"))), 
+  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Bundalovic-Torma et al. (2020)", "Both"))), 
   aes(x = exoPS, y = n, fill = Detection, label = n)) +
-  geom_col(position = "dodge") +
+  geom_col(position = position_dodge2(preserve = "single")) +
   scale_y_continuous(trans = "identity") +
-  geom_bar_text(position = "dodge", outside = TRUE) +
+  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE) +
   ylab("No. of BGCs found in genomes") +
   scale_fill_brewer(palette =  "Set2") +
   theme_bw() +
@@ -161,8 +161,7 @@ ggsave("figures/all/FigS1.svg", dpi = 300, height = 8, width = 16)
 ```
 
 ```{r}
-epsSMASH_regions <- fread("../epsSMASH_analyses/Bundalovic-Torma/data/epsSMASH_results_Bundalovic-Torma/all_regions.tsv") %>%
-   #filter(!str_detect(product, "-like")) %>%
+epsSMASH_regions <- fread("./data/Bundalovic-Torma/all_regions.tsv") %>%
   filter(str_detect(product, 
       "cellulose|pel-positive|pel|alginate|PNAG-ica|PNAG-pga")) %>% 
   filter(product %ni% c("cyanocellulose", "cellulose-gram-positive", "cellulose-gram-positive-like")) %>%
@@ -186,12 +185,12 @@ epsSMASH_unique <- epsSMASH_regions %>% filter(Sp_ID %in% setdiff(epsSMASH_regio
 
 
 
-gene_functions <- fread("../epsSMASH/epssmash/outputs/html/gene_functions.tsv", header = FALSE) %>%
+gene_functions <- fread("./data/gene_functions.tsv", header = FALSE) %>%
   rename(Query = V1, gene_function = V2)
 
 
 data <- fread(
-  "../epsSMASH_analyses/Bundalovic-Torma/data/epsSMASH_results_Bundalovic-Torma/gene_info_Bundalovic.tsv") %>%
+  "./data/Bundalovic-Torma/gene_info_Bundalovic.tsv") %>%
   mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
   ungroup() %>%
   mutate(

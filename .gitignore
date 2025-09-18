@@ -6,3 +6,9 @@ bigscape/*/regions
 bigscape/*/output
 bigscape/*/output_2
 bigscape/*/analysis
+data/sphingomonadales/genomes
+data/sphingomonadales/output/tree/*
+data/sphingomonadales/output/gtdbtk/*
+data/sphingomonadales/output/hmmsearch/*
+!data/sphingomonadales/output/hmmsearch/*.csv
+!data/sphingomonadales/output/tree/MSA_sphingomonadales_tree_subset_for_IQtree.faa.treefile

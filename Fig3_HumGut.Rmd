@@ -20,7 +20,7 @@ library(readxl)
 `%ni%` <- Negate(`%in%`)
 ```
 
-## Genomes of interest
+## Genomes of interest - HQ and species-representative
 ```{r}
 ### HumGut and GOMC were using an old GTDB version, so we updated that:
 GOMC_HumGut_tax <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% rename(genome_id = user_genome, gtdb_classification = classification)
@@ -44,7 +44,9 @@ fwrite(HumGut_tax_HQ_derep %>% select(genome_id), "data/HumGut/HumGut_HQ_derep_g
 
 
 ```{r}
-
+##############################################################
+# Load in HumGut epsSMASH results, add taxonomy and metadata #
+##############################################################
 
 HumGut_all_regions <- fread("data/HumGut/all_regions.tsv") %>%
   rename(genome_id = file) %>%

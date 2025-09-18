@@ -8,6 +8,7 @@ library(ggupset)
 library(gggenes)
 library(forcats)
 library(readxl)
+library(ggfittext)
 `%ni%` <- Negate(`%in%`)
 ```
 
@@ -17,20 +18,22 @@ Dueholm_BGCs <- fread("data/Dueholm/Dueholm.tsv") %>%
   mutate(
     Exopolysaccharide = case_when(
       str_detect(Exopolysaccharide, "Cellulose") ~ "Cellulose",
-      Exopolysaccharide == "PNAG_pga" ~ "PNAG-pga",
+      Exopolysaccharide == "PNAG_pga" ~ "PNAG (pga)",
+      Exopolysaccharide == "PNAG_eps" ~ "PNAG (eps)",
       .default = Exopolysaccharide
     )
   ) %>% rename(Dueholm = Exopolysaccharide) 
 length(unique(Dueholm_BGCs$MAG))
 
 
-epsSMASH_Dueholm <- fread("../epsSMASH_analyses/MGP1000/epsSMASH_results/all_regions.tsv") %>% 
+epsSMASH_Dueholm <- fread("data/Dueholm/all_regions.tsv") %>% 
   mutate(
     product = case_when(
       str_detect(product, "cellulose") ~ "Cellulose",
       str_detect(product, "alginate") ~ "Alginate",
       str_detect(product, "pel") ~ "Pel",
-      str_detect(product, "PNAG") ~ "PNAG-pga",
+      str_detect(product, "PNAG_eps") ~ "PNAG (eps)",
+      str_detect(product, "PNAG-pga") ~ "PNAG (pga)",
       .default = product
     ),
     Category = ifelse(
@@ -50,7 +53,7 @@ epsSMASH_Dueholm <- fread("../epsSMASH_analyses/MGP1000/epsSMASH_results/all_reg
     ),
     Category = ifelse(
       str_detect(product,
-      "amylovoran_stewartan-like|acetan-like|succinoglycan-like|colanic-like|xanthan-like|galactoglucan-like|psl-like|PNAG_eps-like|lactobacillus_eps-like|sphingans-like|zooglan-like|emulsan-like|PNAG_eps"
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
       ), "Wzx/Wzy", Category
     ),
     Category = ifelse(
@@ -79,18 +82,18 @@ epsSMASH_Dueholm <- fread("../epsSMASH_analyses/MGP1000/epsSMASH_results/all_reg
   exoPS = ifelse(is.na(Dueholm), epsSMASH, Dueholm),
   Detection = case_when(
     is.na(Dueholm) & !is.na(epsSMASH) ~ "epsSMASH",
-    !is.na(Dueholm) & is.na(epsSMASH) ~ "Dueholm",
+    !is.na(Dueholm) & is.na(epsSMASH) ~ "Dueholm et al. (2023)",
     !is.na(Dueholm) & !is.na(epsSMASH) ~ "Both",
     is.na(Dueholm) & is.na(epsSMASH) ~ "none"
     )
     )
 
 ggplot(epsSMASH_Dueholm %>% group_by(Detection, exoPS) %>% count() %>%
-  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Dueholm", "Both"))), 
+  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Dueholm et al. (2023)", "Both"))), 
   aes(x = exoPS, y = n, fill = Detection, label = n)) +
-  geom_col(position = "dodge") +
+  geom_col(position = position_dodge2(preserve = "single")) +
   scale_y_continuous(trans = "identity") +
-  geom_bar_text(position = "dodge", outside = TRUE) +
+  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE) +
   ylab("No. of BGCs found in genomes") +
   scale_fill_brewer(palette =  "Set2") +
   theme_bw() +
@@ -102,15 +105,71 @@ ggplot(epsSMASH_Dueholm %>% group_by(Detection, exoPS) %>% count() %>%
   )
 ggsave("figures/all/FigS2.svg", dpi = 300, height = 8, width = 16)
 
+# get genomes in which Dueholm finds xanthan, psl or PNAG (eps)
+Dueholm_wzxwzy <- Dueholm_BGCs %>% filter(str_detect("PNAG_eps|Psl|Xanthan", Dueholm)) %>% distinct(MAG)
+
+
+
+epsSMASH_wzxwzy <- fread("data/Dueholm/all_regions.tsv") %>% 
+  mutate(
+    product = case_when(
+      str_detect(product, "cellulose") ~ "Cellulose",
+      str_detect(product, "alginate") ~ "Alginate",
+      str_detect(product, "pel") ~ "Pel",
+      str_detect(product, "PNAG") ~ "PNAG-pga",
+      .default = product
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "wzy_dependent_putative|wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_dependent_putative|ABC_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "ABC_wzy_dependent_putative|ABC_wzy_dependent_putative_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructan-sucrases|alpha-glucansucrases"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    )
+  ) %>% 
+  select(MAG = file, epsSMASH = product) %>%
+  filter(MAG %in% Dueholm_wzxwzy$MAG)
+
+length(unique(Dueholm_wzxwzy$MAG))
+
+length(unique(epsSMASH_wzxwzy$MAG))
+# we detect at least 1 putative wzx/wzy BGCs in the MAGs where Dueholm et al finds xanthan, psl or pnag (eps).
 ```
 
 ```{r}
-gene_functions <- fread("../epsSMASH/epssmash/outputs/html/gene_functions.tsv", header = FALSE) %>%
+gene_functions <- fread("data/gene_functions.tsv", header = FALSE) %>%
   rename(Query = V1, gene_function = V2)
 
 
 data <- fread(
-  "../epsSMASH_analyses/MGP1000/epsSMASH_results/gene_info_MGP1000.tsv") %>%
+  "data/Dueholm/gene_info_MGP1000.tsv") %>%
   mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
   ungroup() %>%
   mutate(

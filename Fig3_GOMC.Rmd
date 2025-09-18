@@ -20,7 +20,7 @@ library(readxl)
 `%ni%` <- Negate(`%in%`)
 ```
 
-## Genomes of interest
+## Genomes of interest - HQ and species-representative (latter already true for GOMC)
 ```{r}
 GOMC_metadata <- fread("data/GOMC/41586_2024_7891_MOESM3_ESM.csv")
 GOMC_HQ_genome_ids <- GOMC_metadata %>% filter(`Contamination (%)` <= 5, `Completeness (%)` >= 90) %>% rename(genome_id = Bin_id)
@@ -37,13 +37,14 @@ fwrite(GOMC_HQ_genome_ids %>% select(genome_id), "data/GOMC/GOMC_HQ_genome_ids.t
 # Load in GOMC epsSMASH results, add taxonomy and metadata #
 ############################################################
 
-GOMC_metadata_derep <- fread("../epsSMASH_analyses/GOMC/data/41586_2024_7891_MOESM3_ESM.csv") %>% 
+GOMC_metadata_derep <- fread("data/GOMC/41586_2024_7891_MOESM3_ESM.csv") %>% 
   rename(genome_id = Bin_id) %>%
   mutate(
     MAG_status = ifelse(`Contamination (%)` <= 5 & `Completeness (%)` >= 90, "HQ", "MQ")
       ) %>%
   select(genome_id, MAG_status)
 
+### HumGut and GOMC were using an old GTDB version, so we updated that:
 GOMC_HumGut_tax_derep_HQ <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% rename(genome_id = user_genome, gtdb_classification = classification) %>% right_join(GOMC_metadata_derep) %>% 
   filter(MAG_status == "HQ")
   

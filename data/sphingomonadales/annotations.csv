@@ -1,14 +1,14 @@
 Query,Annotation
-sphingX,Acetyltransferase
-sphingA,Acyl-CoA ligase
-sphingB,Decarboxylase
-sphingC,Polysaccharide export (OPX)
-sphingD,Wzc (PCP)
-sphingE,Wzz (PCP)
-sphingF,Unknown function
-sphingG,Secretion ATPase
-sphingH,Polysaccharide deacetylase
-sphingI,Peptidyl transferase
-sphingJ,Glycosyltransferase
-sphingK,Exosortase
-sphingL,Asparagine synthase
+sphX,Acetyltransferase
+sphA,Acyl-CoA ligase
+sphB,Decarboxylase
+sphC,Polysaccharide export (OPX)
+sphD,Wzc (PCP)
+sphE,Wzz (PCP)
+sphF,Unknown function
+sphG,Secretion ATPase
+sphH,Polysaccharide deacetylase
+sphI,Peptidyl transferase
+sphJ,Glycosyltransferase
+sphK,Exosortase
+sphL,Asparagine synthase

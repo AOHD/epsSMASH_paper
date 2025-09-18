@@ -1,5 +1,5 @@
 # If you find multiSMASH useful, please cite the Zenodo DOI: 10.5281/zenodo.8276143
-record	total_count	PNAG-pga	PNAG-pga-like	cellulose-like	curdlan-like	fructansucrase	generic-cellulose	pel-like	putative_ABC_dependent	putative_ABC_dependent_NO_OPX	putative_ABC_or_wzy_dependent	putative_wzy_dependent	putative_wzy_dependent_NO_OPX	sphingans	sphingomonadaceae_eps	type-1-cellulose	hybrid	description
+record	total_count	PNAG-pga	PNAG-pga-like	cellulose-like	curdlan-like	fructansucrase	generic-cellulose	pel-like	putative_ABC_dependent	putative_ABC_dependent_NO_OPX	putative_ABC_or_wzy_dependent	putative_wzy_dependent	putative_wzy_dependent_NO_OPX	sphingans	sphingomonadales_eps	type-1-cellulose	hybrid	description
 GCF_009909235.1_ASM990923v1_genomic.fna	3	0	0	0	0	0	0	0	0	0	0	2	0	0	1	0	0	NZ_JAAAPO010000001.1 Novosphingobium ovatum strain FSY-8 contig00001, whole genome shotgun sequence [11 total records]
 GCF_001886695.1_ASM188669v1_genomic.fna	4	0	0	0	0	0	0	0	0	0	0	2	1	0	1	0	0	NZ_CP018097.1 Aurantiacibacter gangjinensis strain JCM 15420 chromosome I, complete sequence [2 total records]
 GCF_900168325.1_IMG-taxon_2706795032_annotated_assembly_genomic.fna	4	0	0	0	0	0	0	0	0	0	0	3	0	0	1	0	0	NZ_FVZE01000036.1 Novosphingobium mathurense strain SM117, whole genome shotgun sequence [37 total records]

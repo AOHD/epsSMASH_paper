@@ -20,7 +20,7 @@ library(readxl)
 `%ni%` <- Negate(`%in%`)
 ```
 
-## Genomes of interest
+## Genomes of interest - HQ and species-representative
 ```{r}
 MFD_tax_derep_HQ <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% filter(MAG_status == "HQ") %>% rename(genome_id = bin)
 MFD_tax_derep <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% rename(genome_id = bin)
@@ -206,13 +206,5 @@ create_combined_plot <- function(data, title_text) {
 MFD_combined <- create_combined_plot(epsSMASH_MFD, "") 
 MFD_combined
 ```
-# Taxonomy
 
-```{r}
-MFD_tax_derep_HQ_tax <- MFD_tax_derep_HQ %>% separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";") %>% count(Genus)
-  filter(str_detect(Genus, "Sulfotelmatobacter"))
-
-MFD_all_regions_Sulfotel <- MFD_all_regions %>% filter(genome_id %in% MFD_tax_derep_HQ_tax$genome_id) %>% group_by(genome_id) %>% mutate(BGCs = n()) %>% distinct(genome_id, .keep_all = T)
-
-```
 

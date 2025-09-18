@@ -20,7 +20,7 @@ library(readxl)
 `%ni%` <- Negate(`%in%`)
 ```
 
-## Genomes of interest
+## Genomes of interest  - HQ and species-representative
 ```{r}
 
 MiDAS_HQ_tax <- fread("data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%

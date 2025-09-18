@@ -1,4 +1,4 @@
-# Download all genomes from the genomes.txt file
+# Download all genomes from the genomes.txt file (All the genomes where Bundalovic detected exoPS BGCs)
 cat /home/bio.aau.dk/zs85xk/projects/epsSMASH/epsSMASH_paper/data/Bundalovic-Torma/rerun_genomes.txt | parallel -j 1 'efetch -db nuccore -id {} -format genbank -style gbwithparts > /home/bio.aau.dk/zs85xk/projects/epsSMASH/epsSMASH_paper/data/Bundalovic-Torma/genomes/{}.gb 2>> /home/bio.aau.dk/zs85xk/projects/epsSMASH/epsSMASH_paper/data/Bundalovic-Torma/error2.log'
 
 # Check if all files were downloaded
