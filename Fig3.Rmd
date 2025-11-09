@@ -66,10 +66,10 @@ ggsave("figures/all/Fig3A.svg", Fig3A, dpi = 300, height = 8, width = 16)
 
 ```{r}
 all_regions <- rbind(
-  GOMC_all_regions %>% right_join(GOMC_HumGut_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "GOMC"),
-  MiDAS_all_regions %>% right_join(MiDAS_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "MiDAS"),
+  GOMC_all_regions %>% right_join(GOMC_HumGut_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "Global Ocean Microbiome Catalogue"),
+  MiDAS_all_regions %>% right_join(MiDAS_tax_derep_HQ) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "MiDAS Global"),
   HumGut_all_regions %>% right_join(HumGut_tax_HQ_derep) %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "HumGut"),
-  MFD_all_regions %>% right_join(MFD_tax_derep_HQ)  %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "MFD") 
+  MFD_all_regions %>% right_join(MFD_tax_derep_HQ)  %>% select(genome_id, product, start, end, region, contig_edge, gtdb_classification) %>% mutate(Database = "Microflora Danica") 
 ) %>%
   ungroup() %>%
   group_by(Database, genome_id) %>%
@@ -77,64 +77,47 @@ all_regions <- rbind(
 
 
 all_regions_distinct_genome_id <- all_regions%>% group_by(Database) %>% distinct(genome_id, .keep_all = TRUE) %>%
-  mutate(no_genomes = n()) %>% ungroup() %>%
+  mutate(catalogue_size = n()) %>%
+  ungroup() %>%
   group_by(Database, BGCs) %>%
-  mutate(p_BGC = n()/no_genomes*100) %>%
+  mutate(
+    p_BGC = n()/catalogue_size*100,
+    no_genomes = n()
+    ) %>%
   distinct(BGCs, .keep_all = TRUE) %>%
   mutate(Database = factor(Database, levels=names(myColors)))
 
 
 
-BGC_sizes_normal <- all_regions_distinct_genome_id %>% ggplot(
+Fig3B <- all_regions_distinct_genome_id %>% ggplot(
   aes(x = BGCs, y = p_BGC, fill = Database)
 ) + geom_col(position = position_dodge2(width = 0.9)) +
-  facet_wrap(~ Database, ncol = 1) +
+  geom_label2(aes(label = no_genomes), fill = "white", show.legend = FALSE, size = 4) +
+  facet_wrap(~ Database, ncol = 2) +
   scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
-  scale_x_continuous(breaks = seq(0, 8, by = 2)) +
+  scale_x_continuous(breaks = seq(0, 20, by = 2)) +
   scale_y_continuous(breaks = seq(0, 50, by = 25)) +
-  coord_cartesian(xlim = c(0, 8), ylim = c(0, 55)) +
+  coord_cartesian(ylim = c(0, 55)) +
   ylab("Percentage of MAGs") +
   xlab("BGCs/MAG") +
   theme_bw() +
   theme(
   strip.background = element_blank(),
-  strip.text.x = element_blank(),
-  axis.text.x = element_text(hjust = 1, size = 30),
-  axis.title.x = element_text(size = 30),
-  axis.text.y = element_text(size = 30),
-  axis.title.y = element_text(size = 30),
+  strip.text.x = element_text(size = 20),
+  axis.text.x = element_text(hjust = 1, size = 15),
+  axis.title.x = element_text(size = 20),
+  axis.text.y = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
   legend.position = "none",
-  plot.title = element_text(size = 30, hjust = 0.5),
+  plot.title = element_text(size = 20, hjust = 0.5),
   panel.grid.major.x = element_blank()
   )
 
-BGC_sizes_extreme <-all_regions_distinct_genome_id %>% ggplot(
-  aes(x = BGCs, y = p_BGC, fill = Database)
-) + geom_col(position = position_dodge2(width = 0.9)) +
-  facet_wrap(~ Database, ncol  = 1) +
-  scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
-  scale_x_continuous(breaks = seq(0, 20, by = 2)) +
-  scale_y_continuous(breaks = seq(0, 0.25, by = 0.1)) +
-  coord_cartesian(xlim = c(9, 20), ylim = c(0, 0.25)) +
-  xlab("BGCs/MAG") +
-  theme_bw() +
-  theme(
-  strip.background = element_blank(),
-  strip.text.x = element_blank(),
-  axis.text.x = element_text(hjust = 1, size = 30),
-  axis.title.x = element_text(size = 30),
-  axis.text.y = element_text(size = 30),
-  axis.title.y = element_blank(),
-  legend.position = "none",
-  plot.title = element_text(size = 30, hjust = 0.5),
-  panel.grid.major.x = element_blank()
-  )
-
-Fig3B <- BGC_sizes_normal | BGC_sizes_extreme
+Fig3B
 
 fwrite(all_regions %>% select(-BGCs) %>% arrange(gtdb_classification) %>% filter(!is.na(product)), "supplemental_data/TableS3.tsv", sep = "\t")
 
-ggsave("figures/all/Fig3B.svg", Fig3B, dpi = 300, height = 20, width  = 20)
+ggsave("figures/all/Fig3B.svg", Fig3B, dpi = 300, height = 10, width  = 10)
 ```
 
 
