@@ -284,6 +284,9 @@ gene_arrows <- ggplot(genes_flipped,
   )
 
 ggsave("figures/all/Fig5_B.svg", gene_arrows, width = 12, height = 12)
+
+ggplot(epssmash_overview, aes(x = total_count)) +
+  geom_bar()
 ```
 
 

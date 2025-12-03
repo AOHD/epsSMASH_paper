@@ -1,0 +1,568 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='720.00pt' height='1080.00pt' viewBox='0 0 720.00 1080.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw'>
+    <rect x='0.00' y='0.00' width='720.00' height='1080.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+<rect x='0.00' y='0.00' width='720.00' height='1080.00' style='stroke-width: 1.07; stroke: #FFFFFF; fill: #FFFFFF;' />
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w1LjQ4fDYzLjYw'>
+    <rect x='153.62' y='5.48' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w1LjQ4fDYzLjYw)'>
+<polyline points='153.62,34.54 651.27,34.54 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='346.89,30.29 346.89,38.79 376.20,38.79 376.20,40.21 387.54,34.54 376.20,28.87 376.20,30.29 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='386.51,30.29 386.51,38.79 388.95,38.79 388.95,40.21 400.28,34.54 388.95,28.87 388.95,30.29 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='400.22,30.29 400.22,38.79 421.59,38.79 421.59,40.21 432.93,34.54 421.59,28.87 421.59,30.29 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='432.86,30.29 432.86,38.79 446.35,38.79 446.35,40.21 457.69,34.54 446.35,28.87 446.35,30.29 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,30.29 457.74,38.79 473.28,38.79 473.28,40.21 484.61,34.54 473.28,28.87 473.28,30.29 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(362.71,44.91) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(389.09,44.71) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(412.26,44.71) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(441.17,44.51) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(466.47,45.11) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w3MS44MXwxMjkuOTM='>
+    <rect x='153.62' y='71.81' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w3MS44MXwxMjkuOTM=)'>
+<polyline points='153.62,100.87 651.27,100.87 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='382.60,96.62 382.60,105.12 382.60,105.12 382.60,106.54 391.26,100.87 382.60,95.20 382.60,96.62 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='391.69,96.62 391.69,105.12 402.27,105.12 402.27,106.54 413.61,100.87 402.27,95.20 402.27,96.62 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='413.54,96.62 413.54,105.12 419.99,105.12 419.99,106.54 431.33,100.87 419.99,95.20 419.99,96.62 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='431.31,96.62 431.31,105.12 446.63,105.12 446.63,106.54 457.97,100.87 446.63,95.20 446.63,96.62 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,96.62 457.74,105.12 470.35,105.12 470.35,106.54 481.69,100.87 470.35,95.20 470.35,96.62 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='481.24,96.62 481.24,105.12 518.16,105.12 518.16,106.54 529.50,100.87 518.16,95.20 518.16,96.62 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='529.10,96.62 529.10,105.12 583.13,105.12 583.13,106.54 594.47,100.87 583.13,95.20 583.13,96.62 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<text transform='translate(382.42,111.25) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(398.14,111.25) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(418.12,111.05) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(440.54,110.84) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.01,111.45) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(501.06,111.05) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(557.48,111.05) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wxMzguMTV8MTk2LjI3'>
+    <rect x='153.62' y='138.15' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wxMzguMTV8MTk2LjI3)'>
+<polyline points='153.62,167.21 651.27,167.21 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='336.13,162.96 336.13,171.46 373.83,171.46 373.83,172.88 385.17,167.21 373.83,161.54 373.83,162.96 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='386.15,162.96 386.15,171.46 386.15,171.46 386.15,172.88 394.60,167.21 386.15,161.54 386.15,162.96 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='394.58,162.96 394.58,171.46 403.69,171.46 403.69,172.88 415.03,167.21 403.69,161.54 403.69,162.96 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='414.84,162.96 414.84,171.46 420.35,171.46 420.35,172.88 431.69,167.21 420.35,161.54 420.35,162.96 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='431.52,162.96 431.52,171.46 446.37,171.46 446.37,172.88 457.71,167.21 446.37,161.54 446.37,162.96 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,162.96 457.74,171.46 470.30,171.46 470.30,172.88 481.64,167.21 470.30,161.54 470.30,162.96 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='480.98,162.96 480.98,171.46 516.54,171.46 516.54,172.88 527.88,167.21 516.54,161.54 516.54,162.96 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<text transform='translate(356.34,177.38) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(385.86,177.58) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(400.30,177.58) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(418.96,177.38) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(440.51,177.18) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(464.98,177.78) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(500.12,177.38) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wyMDQuNDh8MjYyLjYw'>
+    <rect x='153.62' y='204.48' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wyMDQuNDh8MjYyLjYw)'>
+<polyline points='153.62,233.54 651.27,233.54 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='349.14,229.29 349.14,237.79 374.53,237.79 374.53,239.21 385.87,233.54 374.53,227.87 374.53,229.29 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='385.80,229.29 385.80,237.79 390.06,237.79 390.06,239.21 401.40,233.54 390.06,227.87 390.06,229.29 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='401.12,229.29 401.12,237.79 421.76,237.79 421.76,239.21 433.10,233.54 421.76,227.87 421.76,229.29 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='433.31,229.29 433.31,237.79 446.75,237.79 446.75,239.21 458.09,233.54 446.75,227.87 446.75,229.29 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,229.29 457.74,237.79 472.02,237.79 472.02,239.21 483.36,233.54 472.02,227.87 472.02,229.29 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(362.99,243.92) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(389.29,243.72) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(412.80,243.72) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(441.60,243.51) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.84,244.12) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wyNzAuODJ8MzI4Ljk0'>
+    <rect x='153.62' y='270.82' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wyNzAuODJ8MzI4Ljk0)'>
+<polyline points='153.62,299.88 651.27,299.88 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='351.10,295.63 351.10,304.13 374.62,304.13 374.62,305.55 385.95,299.88 374.62,294.21 374.62,295.63 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='385.97,295.63 385.97,304.13 390.13,304.13 390.13,305.55 401.47,299.88 390.13,294.21 390.13,295.63 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='402.88,295.63 402.88,304.13 421.59,304.13 421.59,305.55 432.93,299.88 421.59,294.21 421.59,295.63 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='433.12,295.63 433.12,304.13 446.41,304.13 446.41,305.55 457.74,299.88 446.41,294.21 446.41,295.63 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,295.63 457.74,304.13 471.61,304.13 471.61,305.55 482.94,299.88 471.61,294.21 471.61,295.63 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(364.02,310.25) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(389.41,310.05) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(413.59,310.05) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(441.33,309.85) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.63,310.45) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wzMzcuMTZ8Mzk1LjI3'>
+    <rect x='153.62' y='337.16' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wzMzcuMTZ8Mzk1LjI3)'>
+<polyline points='153.62,366.21 651.27,366.21 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='354.41,361.96 354.41,370.47 374.06,370.47 374.06,371.88 385.40,366.21 374.06,360.54 374.06,361.96 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='385.42,361.96 385.42,370.47 389.73,370.47 389.73,371.88 401.07,366.21 389.73,360.54 389.73,361.96 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='401.22,361.96 401.22,370.47 421.71,370.47 421.71,371.88 433.05,366.21 421.71,360.54 421.71,361.96 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='433.40,361.96 433.40,370.47 446.63,370.47 446.63,371.88 457.97,366.21 446.63,360.54 446.63,361.96 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,361.96 457.74,370.47 471.55,370.47 471.55,371.88 482.89,366.21 471.55,360.54 471.55,361.96 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(365.39,376.59) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(388.93,376.39) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(412.83,376.39) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(441.58,376.18) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.61,376.79) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w0MDMuNDl8NDYxLjYx'>
+    <rect x='153.62' y='403.49' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w0MDMuNDl8NDYxLjYx)'>
+<polyline points='153.62,432.55 651.27,432.55 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='385.28,428.30 385.28,436.80 385.28,436.80 385.28,438.22 393.68,432.55 385.28,426.88 385.28,428.30 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='393.83,428.30 393.83,436.80 404.25,436.80 404.25,438.22 415.59,432.55 404.25,426.88 404.25,428.30 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='415.36,428.30 415.36,436.80 420.51,436.80 420.51,438.22 431.85,432.55 420.51,426.88 420.51,428.30 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='431.62,428.30 431.62,436.80 446.42,436.80 446.42,438.22 457.76,432.55 446.42,426.88 446.42,428.30 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,428.30 457.74,436.80 470.41,436.80 470.41,438.22 481.74,432.55 470.41,426.88 470.41,428.30 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='481.34,428.30 481.34,436.80 518.16,436.80 518.16,438.22 529.50,432.55 518.16,426.88 518.16,428.30 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='548.96,428.30 548.96,436.80 584.06,436.80 584.06,438.22 595.40,432.55 584.06,426.88 584.06,428.30 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<text transform='translate(384.97,442.92) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(400.20,442.92) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(419.30,442.72) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(440.59,442.52) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.03,443.12) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(501.11,442.72) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(567.87,442.72) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w0NjkuODN8NTI3Ljk0'>
+    <rect x='153.62' y='469.83' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w0NjkuODN8NTI3Ljk0)'>
+<polyline points='153.62,498.88 651.27,498.88 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='360.27,494.63 360.27,503.14 373.45,503.14 373.45,504.55 384.79,498.88 373.45,493.21 373.45,494.63 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='389.17,494.63 389.17,503.14 389.83,503.14 389.83,504.55 401.17,498.88 389.83,493.21 389.83,494.63 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='401.10,494.63 401.10,503.14 421.95,503.14 421.95,504.55 433.29,498.88 421.95,493.21 421.95,494.63 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='433.35,494.63 433.35,503.14 446.84,503.14 446.84,504.55 458.18,498.88 446.84,493.21 446.84,494.63 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,494.63 457.74,503.14 471.40,503.14 471.40,504.55 482.74,498.88 471.40,493.21 471.40,494.63 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(368.02,509.26) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(390.86,509.06) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(412.89,509.06) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(441.66,508.85) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.53,509.46) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w1MzYuMTZ8NTk0LjI4'>
+    <rect x='153.62' y='536.16' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w1MzYuMTZ8NTk0LjI4)'>
+<polyline points='153.62,565.22 651.27,565.22 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='457.74,560.97 457.74,569.47 470.25,569.47 470.25,570.89 481.59,565.22 470.25,559.55 470.25,560.97 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='431.47,560.97 431.47,569.47 446.63,569.47 446.63,570.89 457.97,565.22 446.63,559.55 446.63,560.97 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='414.20,560.97 414.20,569.47 420.13,569.47 420.13,570.89 431.47,565.22 420.13,559.55 420.13,560.97 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='391.22,560.97 391.22,569.47 403.57,569.47 403.57,570.89 414.91,565.22 403.57,559.55 403.57,560.97 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='382.16,560.97 382.16,569.47 382.16,569.47 382.16,570.89 391.29,565.22 382.16,559.55 382.16,560.97 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='330.11,560.97 330.11,569.47 367.92,569.47 367.92,570.89 379.26,565.22 367.92,559.55 367.92,560.97 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='269.07,560.97 269.07,569.47 305.52,569.47 305.52,570.89 316.86,565.22 305.52,559.55 305.52,560.97 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<text transform='translate(464.96,575.79) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(440.61,575.19) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(418.52,575.39) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(398.56,575.59) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(382.22,575.59) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(350.38,575.39) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(288.66,575.39) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w2MDIuNTB8NjYwLjYx'>
+    <rect x='153.62' y='602.50' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w2MDIuNTB8NjYwLjYx)'>
+<polyline points='153.62,631.55 651.27,631.55 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='268.70,627.30 268.70,635.81 305.78,635.81 305.78,637.22 317.12,631.55 305.78,625.88 305.78,627.30 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='332.53,627.30 332.53,635.81 367.94,635.81 367.94,637.22 379.28,631.55 367.94,625.88 367.94,627.30 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='379.80,627.30 379.80,635.81 379.80,635.81 379.80,637.22 388.98,631.55 379.80,625.88 379.80,627.30 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='389.45,627.30 389.45,635.81 401.75,635.81 401.75,637.22 413.08,631.55 401.75,625.88 401.75,627.30 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='412.95,627.30 412.95,635.81 419.92,635.81 419.92,637.22 431.26,631.55 419.92,625.88 419.92,627.30 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='431.28,627.30 431.28,635.81 446.39,635.81 446.39,637.22 457.73,631.55 446.39,625.88 446.39,627.30 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,627.30 457.74,635.81 470.35,635.81 470.35,637.22 481.69,631.55 470.35,625.88 470.35,627.30 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(288.60,641.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(351.59,641.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(379.88,641.93) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(396.76,641.93) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(417.79,641.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(440.40,641.52) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.01,642.13) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w2NjguODN8NzI2Ljk1'>
+    <rect x='153.62' y='668.83' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w2NjguODN8NzI2Ljk1)'>
+<polyline points='153.62,697.89 651.27,697.89 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='457.74,693.64 457.74,702.14 470.98,702.14 470.98,703.56 482.32,697.89 470.98,692.22 470.98,693.64 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='426.81,693.64 426.81,702.14 445.68,702.14 445.68,703.56 457.01,697.89 445.68,692.22 445.68,693.64 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='404.01,693.64 404.01,702.14 415.47,702.14 415.47,703.56 426.81,697.89 415.47,692.22 415.47,693.64 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='380.51,693.64 380.51,702.14 392.86,702.14 392.86,703.56 404.20,697.89 392.86,692.22 392.86,693.64 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='370.23,693.64 370.23,702.14 370.23,702.14 370.23,703.56 380.35,697.89 370.23,692.22 370.23,693.64 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='302.83,693.64 302.83,702.14 358.53,702.14 358.53,703.56 369.87,697.89 358.53,692.22 358.53,693.64 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='257.52,693.64 257.52,702.14 291.31,702.14 291.31,703.56 302.65,697.89 291.31,692.22 291.31,693.64 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<text transform='translate(465.32,708.46) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(437.80,707.86) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(411.10,708.06) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(387.85,708.26) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(370.79,708.26) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(332.04,708.06) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(275.78,708.06) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w3MzUuMTd8NzkzLjI4'>
+    <rect x='153.62' y='735.17' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w3MzUuMTd8NzkzLjI4)'>
+<polyline points='153.62,764.22 651.27,764.22 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='529.59,759.97 529.59,768.48 577.31,768.48 577.31,769.89 588.65,764.22 577.31,758.55 577.31,759.97 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='481.73,759.97 481.73,768.48 517.45,768.48 517.45,769.89 528.79,764.22 517.45,758.55 517.45,759.97 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='457.74,759.97 457.74,768.48 470.46,768.48 470.46,769.89 481.80,764.22 470.46,758.55 470.46,759.97 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='430.82,759.97 430.82,768.48 446.41,768.48 446.41,769.89 457.74,764.22 446.41,758.55 446.41,759.97 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='413.15,759.97 413.15,768.48 419.55,768.48 419.55,769.89 430.89,764.22 419.55,758.55 419.55,759.97 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='390.13,759.97 390.13,768.48 402.11,768.48 402.11,769.89 413.45,764.22 402.11,758.55 402.11,759.97 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='380.62,759.97 380.62,768.48 380.62,768.48 380.62,769.89 390.27,764.22 380.62,758.55 380.62,759.97 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<text transform='translate(554.81,774.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(500.95,774.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(465.06,774.80) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(440.18,774.19) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(417.71,774.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(397.28,774.60) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(380.93,774.60) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w4MDEuNTB8ODU5LjYy'>
+    <rect x='153.62' y='801.50' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w4MDEuNTB8ODU5LjYy)'>
+<polyline points='153.62,830.56 651.27,830.56 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='269.54,826.31 269.54,834.81 307.09,834.81 307.09,836.23 318.43,830.56 307.09,824.89 307.09,826.31 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='331.29,826.31 331.29,834.81 369.21,834.81 369.21,836.23 380.55,830.56 369.21,824.89 369.21,826.31 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='381.05,826.31 381.05,834.81 381.05,834.81 381.05,836.23 390.13,830.56 381.05,824.89 381.05,826.31 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='390.23,826.31 390.23,834.81 401.64,834.81 401.64,836.23 412.98,830.56 401.64,824.89 401.64,826.31 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='412.91,826.31 412.91,834.81 418.53,834.81 418.53,836.23 429.87,830.56 418.53,824.89 418.53,826.31 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='429.80,826.31 429.80,834.81 446.42,834.81 446.42,836.23 457.76,830.56 446.42,824.89 446.42,826.31 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,826.31 457.74,834.81 470.25,834.81 470.25,836.23 481.59,830.56 470.25,824.89 470.25,826.31 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(289.67,840.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(351.61,840.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(381.08,840.93) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(397.10,840.93) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(417.08,840.73) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(439.67,840.53) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(464.96,841.13) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w4NjcuODR8OTI1Ljk1'>
+    <rect x='153.62' y='867.84' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w4NjcuODR8OTI1Ljk1)'>
+<polyline points='153.62,896.89 651.27,896.89 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='457.74,892.64 457.74,901.15 470.25,901.15 470.25,902.56 481.59,896.89 470.25,891.23 470.25,892.64 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='431.22,892.64 431.22,901.15 446.39,901.15 446.39,902.56 457.73,896.89 446.39,891.23 446.39,892.64 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='414.08,892.64 414.08,901.15 419.95,901.15 419.95,902.56 431.29,896.89 419.95,891.23 419.95,892.64 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='390.69,892.64 390.69,901.15 403.14,901.15 403.14,902.56 414.48,896.89 403.14,891.23 403.14,892.64 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='381.57,892.64 381.57,901.15 381.57,901.15 381.57,902.56 390.60,896.89 381.57,891.23 381.57,892.64 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='318.60,892.64 318.60,901.15 369.56,901.15 369.56,902.56 380.89,896.89 369.56,891.23 369.56,892.64 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='269.49,892.64 269.49,901.15 307.66,901.15 307.66,902.56 319.00,896.89 307.66,891.23 307.66,892.64 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<text transform='translate(464.96,907.47) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(440.37,906.86) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(418.38,907.07) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(398.07,907.27) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(381.58,907.27) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(345.44,907.07) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(289.93,907.07) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w5MzQuMTd8OTkyLjI5'>
+    <rect x='153.62' y='934.17' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w5MzQuMTd8OTkyLjI5)'>
+<polyline points='153.62,963.23 651.27,963.23 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='392.13,958.98 392.13,967.48 402.75,967.48 402.75,968.90 414.09,963.23 402.75,957.56 402.75,958.98 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='413.95,958.98 413.95,967.48 419.83,967.48 419.83,968.90 431.17,963.23 419.83,957.56 419.83,958.98 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='430.95,958.98 430.95,967.48 446.84,967.48 446.84,968.90 458.18,963.23 446.84,957.56 446.84,958.98 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,958.98 457.74,967.48 470.30,967.48 470.30,968.90 481.64,963.23 470.30,957.56 470.30,958.98 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<polygon points='481.03,958.98 481.03,967.48 517.54,967.48 517.54,968.90 528.87,963.23 517.54,957.56 517.54,958.98 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='543.69,958.98 543.69,967.48 582.39,967.48 582.39,968.90 593.73,963.23 582.39,957.56 582.39,958.98 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='594.32,958.98 594.32,967.48 594.32,967.48 594.32,968.90 603.08,963.23 594.32,957.56 594.32,958.98 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<text transform='translate(398.60,973.60) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(418.25,973.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(440.46,973.20) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(464.98,973.80) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+<text transform='translate(500.64,973.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(564.40,973.40) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(594.19,973.60) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wxMDAwLjUxfDEwNTguNjI='>
+    <rect x='153.62' y='1000.51' width='497.65' height='58.12' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wxMDAwLjUxfDEwNTguNjI=)'>
+<polyline points='153.62,1029.56 651.27,1029.56 ' style='stroke-width: 2.13; stroke: #BEBEBE; stroke-linecap: butt;' />
+<polygon points='263.47,1025.31 263.47,1033.82 301.64,1033.82 301.64,1035.23 312.98,1029.56 301.64,1023.90 301.64,1025.31 ' style='stroke-width: 0.64; fill: #66C2A5;' />
+<polygon points='312.91,1025.31 312.91,1033.82 340.96,1033.82 340.96,1035.23 352.30,1029.56 340.96,1023.90 340.96,1025.31 ' style='stroke-width: 0.64; fill: #FC8D62;' />
+<polygon points='380.15,1025.31 380.15,1033.82 380.15,1033.82 380.15,1035.23 389.59,1029.56 380.15,1023.90 380.15,1025.31 ' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<polygon points='389.76,1025.31 389.76,1033.82 401.75,1033.82 401.75,1035.23 413.08,1029.56 401.75,1023.90 401.75,1025.31 ' style='stroke-width: 0.64; fill: #E78AC3;' />
+<polygon points='413.02,1025.31 413.02,1033.82 418.84,1033.82 418.84,1035.23 430.18,1029.56 418.84,1023.90 418.84,1025.31 ' style='stroke-width: 0.64; fill: #A6D854;' />
+<polygon points='430.11,1025.31 430.11,1033.82 446.37,1033.82 446.37,1035.23 457.71,1029.56 446.37,1023.90 446.37,1025.31 ' style='stroke-width: 0.64; fill: #FFD92F;' />
+<polygon points='457.74,1025.31 457.74,1033.82 470.41,1033.82 470.41,1035.23 481.74,1029.56 470.41,1023.90 470.41,1025.31 ' style='stroke-width: 0.64; fill: #E5C494;' />
+<text transform='translate(283.92,1039.74) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text transform='translate(328.30,1039.74) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text transform='translate(380.36,1039.94) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text transform='translate(396.92,1039.94) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='23.39px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text transform='translate(417.29,1039.74) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.76px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text transform='translate(439.80,1039.54) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='22.12px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text transform='translate(465.03,1040.14) rotate(-45)' text-anchor='end' style='font-size: 11.38px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wxMDAwLjUxfDEwMDAuNTE='>
+    <rect x='153.62' y='1000.51' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wxMDAwLjUxfDEwMDAuNTE=)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w5MzQuMTd8OTM0LjE3'>
+    <rect x='153.62' y='934.17' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w5MzQuMTd8OTM0LjE3)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w4NjcuODR8ODY3Ljg0'>
+    <rect x='153.62' y='867.84' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w4NjcuODR8ODY3Ljg0)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w4MDEuNTB8ODAxLjUw'>
+    <rect x='153.62' y='801.50' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w4MDEuNTB8ODAxLjUw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w3MzUuMTd8NzM1LjE3'>
+    <rect x='153.62' y='735.17' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w3MzUuMTd8NzM1LjE3)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w2NjguODN8NjY4Ljgz'>
+    <rect x='153.62' y='668.83' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w2NjguODN8NjY4Ljgz)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w2MDIuNTB8NjAyLjUw'>
+    <rect x='153.62' y='602.50' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w2MDIuNTB8NjAyLjUw)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w1MzYuMTZ8NTM2LjE2'>
+    <rect x='153.62' y='536.16' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w1MzYuMTZ8NTM2LjE2)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w0NjkuODN8NDY5Ljgz'>
+    <rect x='153.62' y='469.83' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w0NjkuODN8NDY5Ljgz)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w0MDMuNDl8NDAzLjQ5'>
+    <rect x='153.62' y='403.49' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w0MDMuNDl8NDAzLjQ5)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wzMzcuMTZ8MzM3LjE2'>
+    <rect x='153.62' y='337.16' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wzMzcuMTZ8MzM3LjE2)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wyNzAuODJ8MjcwLjgy'>
+    <rect x='153.62' y='270.82' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wyNzAuODJ8MjcwLjgy)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wyMDQuNDh8MjA0LjQ4'>
+    <rect x='153.62' y='204.48' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wyMDQuNDh8MjA0LjQ4)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3wxMzguMTV8MTM4LjE1'>
+    <rect x='153.62' y='138.15' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3wxMzguMTV8MTM4LjE1)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w3MS44MXw3MS44MQ=='>
+    <rect x='153.62' y='71.81' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w3MS44MXw3MS44MQ==)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+</g>
+<defs>
+  <clipPath id='cpMTUzLjYyfDY1MS4yN3w1LjQ4fDUuNDg='>
+    <rect x='153.62' y='5.48' width='497.65' height='0.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMTUzLjYyfDY1MS4yN3w1LjQ4fDUuNDg=)'>
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHwxMDgwLjAw)'>
+<text x='148.68' y='37.75' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='105.09px' lengthAdjust='spacingAndGlyphs'>Actinomycetota, Collinsella</text>
+<text x='148.68' y='104.08' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='78.22px' lengthAdjust='spacingAndGlyphs'>Aquificota, QNZC01</text>
+<text x='148.68' y='170.42' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='94.34px' lengthAdjust='spacingAndGlyphs'>Aquificota, Thermocrinis</text>
+<text x='148.68' y='236.75' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='72.84px' lengthAdjust='spacingAndGlyphs'>Bacillota_A, Dorea</text>
+<text x='148.68' y='303.09' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='98.73px' lengthAdjust='spacingAndGlyphs'>Bacillota_C, Anaerovibrio</text>
+<text x='148.68' y='369.42' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='93.87px' lengthAdjust='spacingAndGlyphs'>Bacillota, Streptococcus</text>
+<text x='148.68' y='435.76' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='120.74px' lengthAdjust='spacingAndGlyphs'>Campylobacterota, Sulfurovum</text>
+<text x='148.68' y='502.09' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='97.74px' lengthAdjust='spacingAndGlyphs'>Chloroflexota, Villigracilis</text>
+<text x='148.68' y='568.43' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='106.08px' lengthAdjust='spacingAndGlyphs'>Desulfobacterota, RPRC01</text>
+<text x='148.68' y='634.76' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='111.46px' lengthAdjust='spacingAndGlyphs'>Fibrobacterota, Chersky-265</text>
+<text x='148.68' y='701.10' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='100.71px' lengthAdjust='spacingAndGlyphs'>Myxococcota, CALFML01</text>
+<text x='148.68' y='767.43' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='98.76px' lengthAdjust='spacingAndGlyphs'>Myxococcota, JADJBV01</text>
+<text x='148.68' y='833.77' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='93.86px' lengthAdjust='spacingAndGlyphs'>Nitrospirota, JAAYUK01</text>
+<text x='148.68' y='900.10' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='130.05px' lengthAdjust='spacingAndGlyphs'>Pseudomonadota, Pseudomonas</text>
+<text x='148.68' y='966.44' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='70.41px' lengthAdjust='spacingAndGlyphs'>SZUA-79, QIJE01</text>
+<text x='148.68' y='1032.77' text-anchor='end' style='font-size: 8.80px; font-weight: 0;fill: #4D4D4D; font-family: "TeX Gyre Heros";' textLength='123.18px' lengthAdjust='spacingAndGlyphs'>Verrucomicrobiota, CAMAXB01</text>
+<text x='402.44' y='1072.12' text-anchor='middle' style='font-size: 11.00px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='32.39px' lengthAdjust='spacingAndGlyphs'>middle</text>
+<text transform='translate(13.50,532.05) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='14.67px' lengthAdjust='spacingAndGlyphs'>tax</text>
+<rect x='662.23' y='458.14' width='52.29' height='147.82' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='667.71' y='472.84' style='font-size: 11.00px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='29.95px' lengthAdjust='spacingAndGlyphs'>Query</text>
+<rect x='669.12' y='480.94' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #66C2A5;' />
+<rect x='669.12' y='498.22' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #FC8D62;' />
+<rect x='669.12' y='515.50' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #8DA0CB;' />
+<rect x='669.12' y='532.78' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #E78AC3;' />
+<rect x='669.12' y='550.06' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #A6D854;' />
+<rect x='669.12' y='567.34' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #FFD92F;' />
+<rect x='669.12' y='584.62' width='14.45' height='14.45' style='stroke-width: 0.64; fill: #E5C494;' />
+<text x='690.47' y='491.37' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='17.60px' lengthAdjust='spacingAndGlyphs'>pelA</text>
+<text x='690.47' y='508.65' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='17.60px' lengthAdjust='spacingAndGlyphs'>pelB</text>
+<text x='690.47' y='525.93' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='18.08px' lengthAdjust='spacingAndGlyphs'>pelC</text>
+<text x='690.47' y='543.21' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='18.08px' lengthAdjust='spacingAndGlyphs'>pelD</text>
+<text x='690.47' y='560.49' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='17.60px' lengthAdjust='spacingAndGlyphs'>pelE</text>
+<text x='690.47' y='577.77' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='17.11px' lengthAdjust='spacingAndGlyphs'>pelF</text>
+<text x='690.47' y='595.05' style='font-size: 8.80px; font-weight: 0; font-family: "TeX Gyre Heros";' textLength='18.58px' lengthAdjust='spacingAndGlyphs'>pelG</text>
+</g>
+</svg>

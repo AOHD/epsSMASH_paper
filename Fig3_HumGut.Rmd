@@ -153,7 +153,14 @@ epsSMASH_HumGut <- map2_dfr(categories, n_categories, ~ {
       mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
-      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      reframe(
+      `exoPS BGCs/MAGs` = round(mean(BGCs), 5),
+      median = median(BGCs),
+      IQR = IQR(BGCs),
+      Q1 = quantile(BGCs, 0.25, na.rm = TRUE),
+      Q3 = quantile(BGCs, 0.75, na.rm = TRUE),
+      .groups = "drop"
+      ) %>%
       mutate(Category = .x, n_Category = .y)
   } else {
     base_df %>%
@@ -164,7 +171,14 @@ epsSMASH_HumGut <- map2_dfr(categories, n_categories, ~ {
       mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
-      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      reframe(
+      `exoPS BGCs/MAGs` = round(mean(BGCs), 5),
+      median = median(BGCs),
+      IQR = IQR(BGCs),
+      Q1 = quantile(BGCs, 0.25, na.rm = TRUE),
+      Q3 = quantile(BGCs, 0.75, na.rm = TRUE),
+      .groups = "drop"
+      ) %>%
       mutate(Category = .x, n_Category = .y)
   }
 }) %>%

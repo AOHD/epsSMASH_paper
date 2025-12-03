@@ -41,6 +41,64 @@ create_combined_plot <- function(data, title_text) {
       legend.title=element_text(size=24)
     )
 }
+
+
+
+# Function to create BGCs/MAG plots
+create_BGCs_plot <- function(data) {
+  
+  # Transform data
+  plot_data <- data %>% 
+    mutate(Database = factor(Database, levels=names(myColors))) %>%
+    mutate(Category = factor(Category, levels=categories))
+  
+  ggplot(plot_data, 
+         aes(x = Category, y = `exoPS BGCs/MAGs`, fill = Database)) +
+    geom_col(position = position_dodge2(width = 0.9), width = 0.8) +
+    scale_fill_manual(name = "Database", values = myColors, drop = FALSE) +
+    xlab("") +
+    ylab("BGCs/MAGs") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_text(size = 20),
+      axis.title.y = element_text(size = 24),
+      plot.title = element_text(size = 24, hjust = 0.5),
+      panel.grid.major.x = element_blank(),
+      legend.text=element_text(size=20),
+      legend.title=element_text(size=24)
+    )
+}
+
+# Function to create completeness plots
+create_completeness_plot <- function(data, title_text) {
+  
+  # Transform data
+  plot_data <- data %>% 
+    mutate(Database = factor(Database, levels=names(myColors))) %>%
+    mutate(Category = factor(Category, levels=categories))
+  
+  ggplot(plot_data, 
+         aes(x = Category, y = `% complete exoPS BGCs`, fill = Database)) +
+    geom_col(position = position_dodge2(width = 0.9), width = 0.8) +
+    scale_fill_manual(name = "Database", values = myColors, drop = FALSE) +
+    scale_y_continuous(limits = c(0,100)) +
+    xlab("") +
+    ylab("% complete BGCs") +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(size = 20, angle = 45, hjust = 1),
+      axis.text.y = element_text(size = 20),
+      axis.title.y = element_text(size = 24),
+      legend.position = "none",
+      plot.title = element_text(size = 24, hjust = 0.5),
+      panel.grid.major.x = element_blank(),
+      legend.text=element_text(size=20),
+      legend.title=element_text(size=24)
+    )
+}
+
+
 ```
 
 ```{r}
@@ -58,6 +116,12 @@ names(myColors) <- c(
   "Microflora Danica", "MiDAS Global", "Global Ocean Microbiome Catalogue", "HumGut"
  )
 custom_colors <- scale_fill_manual(name = "Database", values = myColors, drop = FALSE)
+
+BGCs <- create_BGCs_plot(epsSMASH_combined)
+
+completeness <- create_completeness_plot(epsSMASH_combined)
+
+BGCs/completeness
 
 Fig3A <- create_combined_plot(epsSMASH_combined, "")
 

@@ -1,0 +1,568 @@
+# Loading libraries
+```{r, setup}
+library(ggtree)
+library(ggtreeExtra)
+library(ggplot2)
+library(gggenes)
+library(tidyverse)
+library(data.table)
+library(tidytree)
+library(ggnewscale)
+library(stringr)
+library(phangorn)
+`%ni%` <- Negate(`%in%`)
+library(RColorBrewer)
+display.brewer.all(colorblindFriendly = TRUE)
+```
+
+
+# Gene arrow function
+```{r}
+
+# Function which plots all the selected gene clusters (every gene cluster in an order for example)
+# The function takes a subset size as input, which is the number of gene clusters to plot in each plot
+plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "right") {
+  
+  # Get the unique regions
+  unique_regions <- unique(data$region_id)
+  
+  # Calculate the number of subsets
+  num_subsets <- ceiling(length(unique_regions) / subset_size)
+  
+  # Loop over each subset
+  for(i in seq_len(num_subsets)) {
+    # Calculate the indices for this subset
+    start_index <- ((i - 1) * subset_size) + 1
+    end_index <- min(i * subset_size, length(unique_regions))
+    
+    # Get the regions for this subset
+    subset_regions <- unique_regions[start_index:end_index]
+    
+    # Filter the data for these regions and plot
+    plot <- data %>%
+      mutate(strand = ifelse(strand == 1, TRUE, FALSE)) %>%
+      filter(region_id %in% subset_regions) %>%
+      ggplot(aes(xmin = start, xmax = end, 
+      y = paste(phylum, genus), 
+      fill = Query, forward = strand)) +
+      geom_gene_arrow() +
+      facet_wrap(~ region_id, scales = "free", ncol = ncol) +
+      ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
+      theme(legend.position = legend_position)
+    print(plot)
+  }
+}
+
+```
+
+# Load Pel BGCs from different phyla
+```{r}
+
+gene_functions <- fread("data/gene_functions.tsv")
+
+GOMC_tax <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% 
+  rename(genome_id = user_genome, gtdb_classification = classification) %>%
+  separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
+
+GOMC_gene_info <- fread(
+    "data/GOMC/gene_info.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location),
+        id = gsub("_genomic", "", genome_id),
+        region_id = gsub("_region", ".region", region_id)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(GOMC_tax)
+
+MiDAS_HQ_tax <- fread("data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
+  select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3")
+
+# List of dereplicated MiDAS genomes
+MiDAS_derep <- fread("data/MiDAS/derep_MAGs_list.tsv")
+
+MiDAS_tax <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep$genome_id) %>% select(genome_id, gtdb_classification, MiDAS_classification) %>%
+  mutate(MAG_status = "HQ") %>%
+  separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
+
+MiDAS_gene_info <- fread(
+    "data/MiDAS/gene_info.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location),
+        id = gsub("_genomic", "", genome_id),
+        region_id = gsub("_region", ".region", region_id)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(MiDAS_tax)
+
+
+### HumGut and GOMC were using an old GTDB version, so we updated that:
+GOMC_HumGut_tax <- fread("data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv") %>% rename(genome_id = user_genome, gtdb_classification = classification) %>%
+  separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
+
+HumGut_tax <- fread("data/HumGut/HumGut.tsv") %>%
+    mutate(genome_file = gsub(".fna.gz", "", genome_file)) %>%
+    select(genome_id = genome_file, OLD_gtdb_classification = gtdbtk_taxonomy, 
+           gtdbtk_organism_name, ncbi_organism_name, `Contamination (%)` = contamination, 
+          `Completeness (%)` = completeness,     cluster95) %>%
+    mutate(Database = "HumGut") %>%
+    left_join(GOMC_HumGut_tax, by = "genome_id")
+
+# Due to how HumGut asks you to filter for the species representatives at 95% ANI (https://github.com/larssnip/HumGut/blob/main/README.md), it matters that you 
+#derep before you filter for HQ species if you want only the ones designated as species reps. This results in about 200 less MAGs though.
+HumGut_tax <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% mutate(Database = "HumGut") %>% filter(`Contamination (%)` <= 5 & `Completeness (%)` >= 90) %>% mutate(MAG_status = "HQ")
+
+
+HumGut_gene_info <- fread(
+    "data/HumGut/gene_info.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location),
+        id = gsub("_genomic", "", genome_id),
+        region_id = gsub("_region", ".region", region_id)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(HumGut_tax)
+
+MFD_tax <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% filter(MAG_status == "HQ") %>% rename(genome_id = bin) %>%
+  separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
+  
+
+MFD_gene_info <- fread(
+    "data/MFD/gene_info.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    group_by(gene_id) %>%
+    ungroup() %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location),
+        id = gsub("_genomic", "", genome_id),
+        region_id = gsub("_region", ".region", region_id)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(MFD_tax) 
+
+
+gene_info_all <- rbind(
+  GOMC_gene_info %>% select(genome_id, region_id, gene_id, product, Query, start, end, strand, phylum, class, order, family, genus, species),
+  MiDAS_gene_info %>% select(genome_id, region_id, gene_id, product, Query, start, end, strand, phylum, class, order, family, genus, species),
+  HumGut_gene_info %>% select(genome_id, region_id, gene_id, product, Query, start, end, strand, phylum, class, order, family, genus, species),
+  MFD_gene_info %>% select(genome_id, region_id, gene_id, product, Query, start, end, strand, phylum, class, order, family, genus, species)
+) %>% 
+  filter(product == "pel" | product == "pel-positive") %>%
+  mutate(
+    Query = gsub("_pos", "", Query)
+  ) %>%
+  group_by(Query) %>%
+  mutate(
+    Query = ifelse(!str_detect(Query, "pel"), "Z", Query) # Z because distinct picks alphabetically
+  ) %>%
+  group_by(region_id) %>% 
+  distinct(gene_id, .keep_all = TRUE) %>% # Get only one hit per gene, favor pel genes over "Z"
+  mutate(
+    Query = ifelse(Query == "Z", NA, Query), # Give Z a proper name for other genes than pel,
+    strand = ifelse(strand == 1, TRUE, FALSE),
+    genus = ifelse(genus == "", "NA", genus)
+  )
+  
+
+
+gene_info_all %>% group_by(phylum) %>% distinct(region_id) %>% count(sort = TRUE)
+
+
+```
+
+# Visualise pel BGCs
+```{r}
+
+
+
+# SZUA-79: 1 DEFGABC
+plot_gene_clusters(gene_info_all %>% filter(phylum == "SZUA-79", Query != "Other"), 10)
+
+# Nitrospirota: 1 ABCDEFG
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Nitrospirota", Query != "Other"), 10)
+
+# Fibrobacterota: 1 ABCDEFG
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Fibrobacterota", Query != "Other"), 10)
+
+# Aquificota: 3/4 CDEFGAB, 1/4 BCDEFGA
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Aquificota", Query != "Other"), 10)
+
+# Verruvomicrobiota: All ABCDEFG, some have unknown genes in between
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Verrucomicrobiota", Query != "Other"), 10)
+
+# Myxococcota: Most have canonical ABCDEFG, but 4/12 have CDEFGBA
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Myxococcota", Query != "Other"), 10)
+
+# Desulfobacterota: Most have canonical ABCDEFG
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Desulfobacterota"), 10)
+
+# Camplobacterota: CDEFGAB, often an unknown gene between A and B
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Campylobacterota", Query != "Other"), 10)
+
+# Pseudomonadota: Canonical ABCDEFG in nearly all
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Pseudomonadota", Query != "Other"), 10)
+
+
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Bacillota", Query != "Other"), 10)
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Bacillota_A", Query != "Other"), 10)
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Bacillota_C", Query != "Other"), 10)
+
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Actinomycetota", Query != "Other"), 10)
+
+plot_gene_clusters(gene_info_all %>% filter(phylum == "Chloroflexota", Query != "Other"), 10)
+
+
+
+```
+```{r}
+picked_regions <- c(
+  "GCA_002263545.1_ASM226354v1_genomic_NMRU01000001.1.region002", # Pseudomonas aeruginosa - Pseudomonadota
+  "GOMC.bin.3489_SRR7968109_k53_700137_1.region001", # Sulfurovum - Campylobacterota
+  "055-AR-06.bin.1.54_055-AR-06.bin.1.54_contig_7017.region001",  # RPRC01 - Desulfobacterota
+  "072-HK-05.bin.1.60_072-HK-05.bin.1.60_contig_51413.region001", # CALFML01 - Myxococcota
+  "097-US2-29.bin.1.520_097-US2-29.bin.1.520_contig_4541.region001", # JADJBV01 - Myxococcota
+  "017-IL-02.bin.1.688_017-IL-02.bin.1.688_contig_61046.region001", # CAMAXB01 - Verrucomicrobiota
+  "GOMC.bin.6595_OFEJ01000034.1.region001", # Thermocrinis - Aquificota
+  "GOMC.bin.3955_SRR8439172_k53_258454_1.region001", # QNZC01 - Aquificota
+  "GOMC.bin.2587_SRR6439355_k53_11250_1.region001", # QIJE01 - SZUA-1,
+  "075-IN-06.bin.1.39_075-IN-06.bin.1.39_contig_2890.region001", # JAAYUK01 sp012517735 - Nitrospirota
+  "GOMC.bin.15212_k141_18351.region001", # Chersky-265 - Fibrobacterota
+  "033-IN-11.bin.3.678_033-IN-11.bin.3.678_contig_22130.region001", # Villigracilis - Chloroflexota
+  "GUT_GENOME084630_krakentaxid3009545HumGut_9545_6.region001", # Collinsella - Actinomycetota
+  "GCF_003944125.1_ASM394412v1_genomic_krakentaxid3015603HumGut_15603_1.region001", # Streptococcus - Bacillota
+  "GCF_013301415.1_ASM1330141v1_genomic_krakentaxid3000404HumGut_404_57.region001", # Dorea - Bacillota_A
+  "GUT_GENOME233923_krakentaxid3020179HumGut_20179_13.region001" # Anaerovibrio - Bacillota_C
+  )
+
+data_filtered <- gene_info_all %>% filter(region_id %in% picked_regions) %>%
+  mutate(tax = paste(phylum, genus, sep = ", "))
+
+
+
+ggplot(data_filtered %>% filter(!is.na(Query)), 
+                      aes(xmin = start, xmax = end, y = tax, fill = Query, forward = strand,  label = Query)
+                      ) +
+  geom_gene_arrow() +
+  scale_fill_brewer(palette = "Paired", na.value = "grey50") +
+  facet_wrap(~ genus, scales = "free", ncol = 1) +
+  theme_genes() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+  )
+
+
+flip_cluster <- function(df, cluster_name) {
+  if (cluster_name == "all") {
+    cluster_genes = df
+  }
+  else {
+  cluster_genes <- df[df$genus == cluster_name, ]
+  }
+  max_end <- max(cluster_genes$end)
+  
+  cluster_genes %>%
+    mutate(
+      new_start = max_end - end + 1,
+      new_end = max_end - start + 1,
+      start = new_start,
+      end = new_end,
+      strand = ifelse(strand == TRUE, FALSE, TRUE)
+    ) %>%
+    select(-new_start, -new_end)
+}
+
+
+genes_flipped <- bind_rows(
+  data_filtered %>% filter(genus %in% c("QNZC01", "CAMAXB01", "Chersky-265", 
+                                        "JAAYUK01", "QIJE01", "Thermocrinis", 
+                                        "Sulfurovum", "Villigracilis", "Collinsella",
+                                        "Streptococcus", "Dorea", "Anaerovibrio")),
+  flip_cluster(data_filtered, "CALFML01"),
+  flip_cluster(data_filtered, "JADJBV01"),
+  flip_cluster(data_filtered, "RPRC01"),
+  flip_cluster(data_filtered, "Pseudomonas")
+) 
+
+genes_flipped$middle <- (genes_flipped$start + genes_flipped$end) / 2
+
+dummies <- make_alignment_dummies(
+  genes_flipped,
+  aes(xmin = start, xmax = end, y = tax, id = Query),
+  on = "pelG"
+)
+
+dummies$middle <- (dummies$start + dummies$end) / 2
+
+
+gene_arrows <- ggplot(genes_flipped %>% filter(!is.na(Query)), 
+                      aes(xmin = start, xmax = end, x = middle, y = tax, fill = Query, forward = strand,  label = Query)
+                      ) +
+  geom_gene_arrow() +
+  geom_blank(data = dummies, aes(forward = 1)) +
+  geom_text(angle = 45, hjust = 1.45, size = 4) +
+  scale_fill_brewer(palette = "Set2", na.value = "grey50") +
+  facet_wrap(~ tax, scales = "free", ncol = 1) +
+  theme_genes() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+  )
+
+gene_arrows
+
+ggsave("figures/all/FigS7.svg", height = 15, width = 10)
+
+```
+
+
+
+# Gene arrow function
+```{r}
+
+# Function which plots all the selected gene clusters (every gene cluster in an order for example)
+# The function takes a subset size as input, which is the number of gene clusters to plot in each plot
+plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "right") {
+  
+  # Get the unique regions
+  unique_regions <- unique(data$region_id)
+  
+  # Calculate the number of subsets
+  num_subsets <- ceiling(length(unique_regions) / subset_size)
+  
+  # Loop over each subset
+  for(i in seq_len(num_subsets)) {
+    # Calculate the indices for this subset
+    start_index <- ((i - 1) * subset_size) + 1
+    end_index <- min(i * subset_size, length(unique_regions))
+    
+    # Get the regions for this subset
+    subset_regions <- unique_regions[start_index:end_index]
+    
+    # Filter the data for these regions and plot
+    plot <- data %>%
+      mutate(strand = ifelse(strand == 1, TRUE, FALSE)) %>%
+      filter(region_id %in% subset_regions) %>%
+      ggplot(aes(xmin = start, xmax = end, 
+      y = paste(phylum, genus), 
+      fill = Query, forward = strand)) +
+      geom_gene_arrow() +
+      facet_wrap(~ region_id, scales = "free", ncol = ncol) +
+      ggtitle(paste("Gene clusters from subset", i, "of", num_subsets)) +
+      theme(legend.position = legend_position)
+    print(plot)
+  }
+}
+
+```
+
+# Visualise pel-like clusters from MiDAS and the cellulose-like clusters from GOMC
+```{r}
+
+pel_like_1 <- fread("data/MiDAS/pel_like_1.tsv", header = FALSE) %>% mutate(V1 = gsub(".region.*", "", V1))
+
+pel_like_2 <- fread("data/MiDAS/pel_like_2.tsv", header = FALSE) %>% mutate(V1 = gsub(".region.*", "", V1))
+
+pel_like_3 <- fread("data/MiDAS/pel_like_3.tsv", header = FALSE) %>% mutate(V1 = gsub(".region.*", "", V1))
+
+
+
+tax <- rbind(
+  GOMC_gene_info %>% select(genome_id, phylum, class, order, family, genus, species) %>% distinct(genome_id, .keep_all = TRUE),
+  MiDAS_gene_info %>% select(genome_id, phylum, class, order, family, genus, species) %>% distinct(genome_id, .keep_all = TRUE),
+  HumGut_gene_info %>% select(genome_id, phylum, class, order, family, genus, species) %>% distinct(genome_id, .keep_all = TRUE),
+  MFD_gene_info %>% select(genome_id, phylum, class, order, family, genus, species) %>% distinct(genome_id, .keep_all = TRUE)
+) 
+
+gene_info_like <- fread(
+    "../epsSMASH_analyses/like_analysis/gene_info.tsv") %>%
+    mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
+    mutate(
+        region_id = paste0(genome_id, "_", contig_id, "_", region_id),
+        record = gsub("_ASM.*", "", genome_id),
+        location = as.character(location),
+        location = gsub(":", "_", location),
+        location = gsub("]", "_", location),
+        location = gsub("\\[", "", location),
+        location = gsub(">", "", location),
+        location = gsub("<", "", location),
+        id = gsub("_genomic", "", genome_id)
+    ) %>%
+    separate(`location`, c("start", "end", "strand"), sep = "_") %>%
+    mutate(
+        start = as.numeric(start),
+        end = as.numeric(end),
+        strand = ifelse(strand == "(+)", 1, -1),
+        type = case_when(
+        contig_id %in% pel_like_1$V1 ~ "Pel-like 1",
+        contig_id %in% pel_like_2$V1 ~ "Pel-like 2",
+        contig_id %in% pel_like_3$V1 ~ "Pel-like 3",
+        .default = NA
+        ),
+        Query = gsub("_pos", "", Query)
+    ) %>%
+    left_join(gene_functions, by = c("Query" = "Query")) %>%
+    left_join(tax, by = "genome_id") %>%
+    group_by(Query) %>%
+    mutate(
+    Query = ifelse(!str_detect(Query, "pel|Bcs"), NA, Query)
+    ) %>%
+    group_by(region_id) %>% 
+    mutate(
+    strand = ifelse(strand == 1, TRUE, FALSE),
+    genus = ifelse(genus == "", "NA", genus)#,
+    #Query = ifelse(is.na(Query) & pfam_hit != "", str_extract(pfam_hit, "^.*?\\)"), Query)
+    ) %>% 
+    ungroup() %>%
+    group_by(gene_id) %>% # If n() > 1, remove NAs (so we only get annotated genes, but keep unannotated rows)
+    filter(if (n() > 1) !is.na(Query) else TRUE) %>%
+    ungroup()
+
+
+gene_info_pel_forward <- gene_info_like %>% 
+  group_split(region_id) %>%
+  keep(~ any(.x$Query == "pelG" & .x$strand == FALSE, na.rm = TRUE)) %>%
+  map(~flip_cluster(.x, "all")) %>%
+  bind_rows() %>%
+  rbind(gene_info_like %>% group_by(region_id) %>% filter(any(Query == "pelG" & strand == TRUE))) %>%
+  group_by(region_id) %>%
+  filter(
+    {
+      pelG_end   <- max(end[Query == "pelG"], na.rm = TRUE)
+      pelA_start <- min(start[Query == "pelA"], na.rm = TRUE)
+
+      start <= pelG_end &
+      end   >= pelA_start
+    }
+  ) %>%
+  ungroup()
+
+
+# pel-like 1
+plot_gene_clusters(gene_info_pel_forward %>% filter(type == "Pel-like 1"), 10, legend_position = "bottom")
+
+# pel-like 2
+plot_gene_clusters(gene_info_pel_forward %>% filter(type == "Pel-like 2"), 5, legend_position = "bottom")
+
+# pel-like 3
+plot_gene_clusters(gene_info_pel_forward %>% filter(type == "Pel-like 3"), 10, legend_position = "bottom")
+
+
+
+
+```
+# Figure S8
+```{r}
+
+pel_like_picked <- gene_info_pel_forward %>%
+  filter(region_id %in% c(
+  "006-MY-06.bin.1.480_006-MY-06.bin.1.480_contig_14588_region001", # Pel-like type 1, hyphomicrobium 
+  "087-SA-04.bin.1.123_087-SA-04.bin.1.123_contig_25347_region001", # Pel-like type 2, Acidobacteriota
+  "003-CA-05.bin.1.230_003-CA-05.bin.1.230_contig_28957_region001" # Pel-like type 3, Verrucomicrobiales
+  )
+  ) %>%
+  bind_rows(genes_flipped %>% filter(genus == "Pseudomonas")) %>%
+  mutate(tax = paste(phylum, genus)) %>%
+  group_by(region_id)
+  
+  
+
+
+
+dummies <- make_alignment_dummies(
+  pel_like_picked,
+  aes(xmin = start, xmax = end, y = tax, id = Query),
+  on = "pelG"
+)
+
+pel_like_picked$middle <- (pel_like_picked$start + pel_like_picked$end) / 2
+
+
+dummies$middle <- (dummies$start + dummies$end) / 2
+
+
+gene_arrows <- ggplot(pel_like_picked, 
+                      aes(xmin = start, xmax = end, x = middle, y = tax, fill = Query, forward = strand,  label = Query)
+                      ) +
+  geom_gene_arrow() +
+  geom_blank(data = dummies, aes(forward = 1)) +
+  geom_text(angle = 45, hjust = 1.45, size = 4) +
+  scale_fill_brewer(palette = "Set2", na.value = "grey50") +
+  facet_wrap(~ tax, scales = "free", ncol = 1) +
+  theme_genes() +
+  theme(
+    axis.line.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    legend.position = "bottom"
+  )
+
+gene_arrows
+
+ggsave("figures/all/FigS8.svg")
+```
+
+
+

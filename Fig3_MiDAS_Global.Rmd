@@ -144,7 +144,14 @@ epsSMASH_MiDAS <- map2_dfr(categories, n_categories, ~ {
       mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
-      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      reframe(
+      `exoPS BGCs/MAGs` = round(mean(BGCs), 5),
+      median = median(BGCs),
+      IQR = IQR(BGCs),
+      Q1 = quantile(BGCs, 0.25, na.rm = TRUE),
+      Q3 = quantile(BGCs, 0.75, na.rm = TRUE),
+      .groups = "drop"
+      ) %>%
       mutate(Category = .x, n_Category = .y)
   } else {
     base_df %>%
@@ -155,13 +162,26 @@ epsSMASH_MiDAS <- map2_dfr(categories, n_categories, ~ {
       mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
-      summarise(`exoPS BGCs/MAGs` = round(mean(BGCs), 5), .groups = "drop") %>%
+      reframe(
+      `exoPS BGCs/MAGs` = round(mean(BGCs), 5),
+      median = median(BGCs),
+      IQR = IQR(BGCs),
+      Q1 = quantile(BGCs, 0.25, na.rm = TRUE),
+      Q3 = quantile(BGCs, 0.75, na.rm = TRUE),
+      .groups = "drop"
+      ) %>%
       mutate(Category = .x, n_Category = .y)
   }
 }) %>%
   left_join(percentage, by = c("MAG_status", "Category", "n_Category"))
 
+x <- base_df %>%
+  group_by(genome_id, MAG_status) %>%
+  mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+  group_by(MAG_status) %>%
+  distinct(genome_id, .keep_all = TRUE)
 
+boxplot(x$BGCs)
 
 ```
 # Plotting the stats for MiDAS Global epsSMASH results
