@@ -34,9 +34,10 @@ epsSMASH_all_regions <- fread("data/Bundalovic-Torma/all_regions.tsv") %>%
   select(Sp_ID, epsSMASH) %>%
   distinct(Sp_ID, .keep_all = TRUE)
 
+# Read supplementary file from Bundalovic study (must be added to directory)
 Bundalovic_tax <- read_excel("data/Bundalovic-Torma/pcbi.1007721.s015.xlsx", sheet = 1, skip = 1) %>% select(Sp_ID = `NCBI RefSeq Genome ID`, Sp_name = `Species Name`)
 
-
+# Read supplementary file from Bundalovic study (must be added to directory)
 Bundalovic_regions <- read_excel("data/Bundalovic-Torma/pcbi.1007721.s009.xlsx", sheet = 1, skip = 1) %>% 
   unite(col = "operon",7:19) %>%
   select(Sp_name, Sp_ID, `Biofilm Type`, Num_Loci, operon) %>%
@@ -130,7 +131,7 @@ epsSMASH_Bundalovic_all_regions <- fread("data/Bundalovic-Torma//all_regions.tsv
   mutate(
   Bundalovic = ifelse(Bundalovic == epsSMASH | is.na(epsSMASH), Bundalovic, NA),
   exoPS = ifelse(is.na(Bundalovic), epsSMASH, Bundalovic),
-  Detection = case_when(
+  `exoPS predictions` = case_when(
     is.na(Bundalovic) & !is.na(epsSMASH) ~ "epsSMASH",
     !is.na(Bundalovic) & is.na(epsSMASH) ~ "Bundalovic-Torma et al. (2020)",
     !is.na(Bundalovic) & !is.na(epsSMASH) ~ "Both",
@@ -139,23 +140,23 @@ epsSMASH_Bundalovic_all_regions <- fread("data/Bundalovic-Torma//all_regions.tsv
     )
   
 
-ggplot(epsSMASH_Bundalovic_all_regions %>% group_by(Detection, exoPS) %>% count() %>%
-  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Bundalovic-Torma et al. (2020)", "Both"))), 
-  aes(x = exoPS, y = n, fill = Detection, label = n)) +
+ggplot(epsSMASH_Bundalovic_all_regions %>% group_by(`exoPS predictions`, exoPS) %>% count() %>%
+  mutate(`exoPS predictions` = factor(`exoPS predictions`, levels = c("epsSMASH", "Bundalovic-Torma et al. (2020)", "Both"))), 
+  aes(x = exoPS, y = n, fill = `exoPS predictions`, label = n)) +
   geom_col(position = position_dodge2(preserve = "single")) +
   scale_y_continuous(trans = "identity") +
-  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE) +
-  ylab("No. of BGCs found in genomes") +
+  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE, size = 16) +
+  ylab("BGCs") +
   scale_fill_brewer(palette =  "Set2") +
   theme_bw() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
-    axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12),
-    legend.text = element_text(size = 12)
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 16)
   )
 
-ggsave("figures/all/FigS1.svg", dpi = 300, height = 8, width = 16)
+ggsave("figures/all/FigS1.svg", dpi = 300, height = 8, width = 12)
 
 
 ```

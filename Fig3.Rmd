@@ -55,9 +55,9 @@ create_BGCs_plot <- function(data) {
   ggplot(plot_data, 
          aes(x = Category, y = `exoPS BGCs/MAGs`, fill = Database)) +
     geom_col(position = position_dodge2(width = 0.9), width = 0.8) +
-    scale_fill_manual(name = "Database", values = myColors, drop = FALSE) +
+    scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
     xlab("") +
-    ylab("BGCs/MAGs") +
+    ylab("BGCs/MAG") +
     theme_bw() +
     theme(
       axis.text.x = element_blank(),
@@ -81,7 +81,7 @@ create_completeness_plot <- function(data, title_text) {
   ggplot(plot_data, 
          aes(x = Category, y = `% complete exoPS BGCs`, fill = Database)) +
     geom_col(position = position_dodge2(width = 0.9), width = 0.8) +
-    scale_fill_manual(name = "Database", values = myColors, drop = FALSE) +
+    scale_fill_manual(name = "Genome catalogue", values = myColors, drop = FALSE) +
     scale_y_continuous(limits = c(0,100)) +
     xlab("") +
     ylab("% complete BGCs") +
@@ -107,7 +107,8 @@ epsSMASH_combined <- rbind(
   epsSMASH_GOMC %>% mutate(Database = "Global Ocean Microbiome Catalogue"),
   epsSMASH_MiDAS %>% mutate(Database = "MiDAS Global"),
   epsSMASH_HumGut %>% mutate(Database = "HumGut"),
-  epsSMASH_MFD %>% mutate(Database = "Microflora Danica"))
+  epsSMASH_MFD %>% mutate(Database = "Microflora Danica")) %>%
+  filter(Category != "All")
 
 
 myColors <- brewer.pal(4, "Set2")
@@ -121,9 +122,8 @@ BGCs <- create_BGCs_plot(epsSMASH_combined)
 
 completeness <- create_completeness_plot(epsSMASH_combined)
 
-BGCs/completeness
 
-Fig3A <- create_combined_plot(epsSMASH_combined, "")
+Fig3A <- BGCs/completeness
 
 ggsave("figures/all/Fig3A.svg", Fig3A, dpi = 300, height = 8, width = 16)
 ```
@@ -184,4 +184,42 @@ fwrite(all_regions %>% select(-BGCs) %>% arrange(gtdb_classification) %>% filter
 ggsave("figures/all/Fig3B.svg", Fig3B, dpi = 300, height = 10, width  = 10)
 ```
 
+```{r}
+print("Percentage of detected regions which are uncharacterised")
+print("HumGut")
+nrow(HumGut_all_regions %>% filter(Category == "Uncharacterised"))/nrow(HumGut_all_regions)
+print("GOMC")
+nrow(GOMC_all_regions %>% filter(Category == "Uncharacterised"))/nrow(GOMC_all_regions)
+print("MFD")
+nrow(MFD_all_regions %>% filter(Category == "Uncharacterised"))/nrow(MFD_all_regions)
+print("MiDAS")
+nrow(MiDAS_all_regions %>% filter(Category == "Uncharacterised"))/nrow(MiDAS_all_regions)
+
+print("How many MAGS contain at least one exoPS BGC?")
+print("HumGut")
+print("Number")
+nrow(HumGut_all_regions %>% distinct(genome_id))
+print("Percent")
+nrow(HumGut_all_regions %>% distinct(genome_id))/nrow(HumGut_tax_HQ_derep)
+print("GOMC")
+print("Number")
+nrow(GOMC_all_regions %>% distinct(genome_id))
+print("Percent")
+nrow(GOMC_all_regions %>% distinct(genome_id))/nrow(GOMC_HQ_genome_ids)
+print("MFD")
+print("Number")
+nrow(MFD_all_regions %>% distinct(genome_id))
+print("Percent")
+nrow(MFD_all_regions %>% distinct(genome_id))/nrow(MFD_tax_derep_HQ)
+print("MiDAS")
+print("Number")
+nrow(MiDAS_all_regions %>% distinct(genome_id))
+print("Percent")
+nrow(MiDAS_all_regions %>% distinct(genome_id))/nrow(MiDAS_tax_derep_HQ)
+
+
+
+
+
+```
 

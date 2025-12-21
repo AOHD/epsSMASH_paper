@@ -22,8 +22,38 @@ library(readxl)
 
 ## Genomes of interest - HQ and species-representative
 ```{r}
-MFD_tax_derep_HQ <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% filter(MAG_status == "HQ") %>% rename(genome_id = bin)
-MFD_tax_derep <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% rename(genome_id = bin)
+# Read supplementary file from MFD long-read study (must be added to directory)
+MFD_tax_derep_HQ <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% filter(MAG_status == "HQ") %>% dplyr::rename(genome_id = bin)
+MFD_tax_derep <- fread("data/MFD/MFD_mags_drep_V4.tsv") %>% dplyr::rename(genome_id = bin)
+
+# Contig information
+
+contig_stats <- fread("data/MFD/contig_stats.tsv") %>%
+  mutate(genome = gsub(".fa", "", genome)) %>%
+  filter(genome %in% MFD_tax_derep_HQ$genome_id)
+
+MFD_N50 <- contig_stats %>%
+  group_by(genome) %>%
+  reframe(
+    decreasing_csizes = sort(length, decreasing = TRUE),
+    tmp = cumsum(as.numeric(decreasing_csizes)),
+    total_size = tmp[length(tmp)],
+    N50 = decreasing_csizes[which(tmp >= total_size/2)[1]]
+  ) %>%
+  reframe(
+    median_N50 = median(N50),
+    Q1 = quantile(N50, 0.25, na.rm = TRUE),
+    Q3 = quantile(N50, 0.75, na.rm = TRUE))
+
+MFD_median_contig_no <- contig_stats %>%
+  group_by(genome) %>%
+  summarise(contig_no = n()) %>%
+  summarise(
+    median_contig_no = median(contig_no),
+    Q1 = quantile(contig_no, 0.25, na.rm = TRUE),
+    Q3 = quantile(contig_no, 0.75, na.rm = TRUE)
+    )
+
 
 
 # Write genome IDs to file
@@ -139,7 +169,8 @@ epsSMASH_MFD <- map2_dfr(categories, n_categories, ~ {
   if (.x == "All") {
     base_df %>%
       group_by(genome_id, MAG_status) %>%
-      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      filter(!is.na(Category)) %>%
+      mutate(BGCs = n()) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
       reframe(
@@ -155,6 +186,7 @@ epsSMASH_MFD <- map2_dfr(categories, n_categories, ~ {
     base_df %>%
       filter(Category == .x) %>%
       group_by(genome_id, MAG_status) %>%
+      filter(!is.na(Category)) %>%
       mutate(BGCs = n()) %>%
       bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
       mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%

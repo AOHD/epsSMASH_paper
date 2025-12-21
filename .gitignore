@@ -1,4 +1,7 @@
 data/Bundalovic-Torma/genomes/
+data/*/*.xlsx
+data/*/*.csv
+data/Dueholm/Dueholm_.tsv
 data/GTDB220_HumGut_GOMC/*
 !data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary.tsv
 !data/GTDB220_HumGut_GOMC/GOMC-HumGut.gtdb.R220.classification.tsv
@@ -10,9 +13,13 @@ data/sphingomonadales/genomes
 data/sphingomonadales/output/tree/*
 data/sphingomonadales/output/gtdbtk/*
 data/sphingomonadales/output/hmmsearch/*
-data/MFD/gene_info.tsv
 data/GOMC/gene_info.tsv
 data/MiDAS/gene_info.tsv
+data/MFD/gene_info.tsv
+data/HumGut/gene_info.tsv
+data/HumGut/HumGut_.tsv
 !data/sphingomonadales/output/hmmsearch/*.csv
 data/sphingomonadales/epsSMASH_results_Sphingomonadales/
 !data/sphingomonadales/output/tree/MSA_sphingomonadales_tree_subset_for_IQtree.faa.treefile
+data/MiDAS/tree_heatmap/gtdbtk
+data/MiDAS/tree_heatmap/genomes

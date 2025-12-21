@@ -23,6 +23,7 @@ library(readxl)
 ## Genomes of interest  - HQ and species-representative
 ```{r}
 
+# Read supplementary file from MiDAS Global study (must be added to directory)
 MiDAS_HQ_tax <- fread("data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
   select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3")
 
@@ -31,6 +32,33 @@ MiDAS_derep <- fread("data/MiDAS/derep_MAGs_list.tsv")
 
 # Taxonomy of all dereplicated MiDAS global MAGs
 MiDAS_tax_derep_HQ <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep$genome_id) %>% select(genome_id, gtdb_classification, MiDAS_classification) %>% mutate(MAG_status = "HQ")
+
+# Contig information
+
+
+contig_stats <- fread("data/MiDAS/contig_stats.tsv")
+
+MiDAS_N50 <- contig_stats %>%
+  group_by(genome) %>%
+  reframe(
+    decreasing_csizes = sort(length, decreasing = TRUE),
+    tmp = cumsum(as.numeric(decreasing_csizes)),
+    total_size = tmp[length(tmp)],
+    N50 = decreasing_csizes[which(tmp >= total_size/2)[1]]
+  ) %>%
+  reframe(
+    median_N50 = median(N50),
+    Q1 = quantile(N50, 0.25, na.rm = TRUE),
+    Q3 = quantile(N50, 0.75, na.rm = TRUE))
+
+MiDAS_median_contig_no <- contig_stats %>%
+  group_by(genome) %>%
+  summarise(contig_no = n()) %>%
+  summarise(
+    median_contig_no = median(contig_no),
+    Q1 = quantile(contig_no, 0.25, na.rm = TRUE),
+    Q3 = quantile(contig_no, 0.75, na.rm = TRUE)
+    )
 
 # Write genome ids to file 
 fwrite(MiDAS_tax_derep_HQ %>% select(genome_id), "data/MiDAS/MiDAS_HQ_genome_ids.tsv")
@@ -141,7 +169,8 @@ epsSMASH_MiDAS <- map2_dfr(categories, n_categories, ~ {
   if (.x == "All") {
     base_df %>%
       group_by(genome_id, MAG_status) %>%
-      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      filter(!is.na(Category)) %>%
+      mutate(BGCs = n()) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
       reframe(
@@ -157,6 +186,7 @@ epsSMASH_MiDAS <- map2_dfr(categories, n_categories, ~ {
     base_df %>%
       filter(Category == .x) %>%
       group_by(genome_id, MAG_status) %>%
+      filter(!is.na(Category)) %>%
       mutate(BGCs = n()) %>%
       bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
       mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
@@ -175,14 +205,7 @@ epsSMASH_MiDAS <- map2_dfr(categories, n_categories, ~ {
 }) %>%
   left_join(percentage, by = c("MAG_status", "Category", "n_Category"))
 
-x <- base_df %>%
-  group_by(genome_id, MAG_status) %>%
-  mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
-  group_by(MAG_status) %>%
-  distinct(genome_id, .keep_all = TRUE)
-
-boxplot(x$BGCs)
-
+epsSMASH_MiDAS
 ```
 # Plotting the stats for MiDAS Global epsSMASH results
 ```{r}

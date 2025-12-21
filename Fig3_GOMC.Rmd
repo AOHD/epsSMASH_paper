@@ -22,8 +22,36 @@ library(readxl)
 
 ## Genomes of interest - HQ and species-representative (latter already true for GOMC)
 ```{r}
+# Read supplementary file from Global Ocean Microbiome Catalogue study (must be added to directory)
 GOMC_metadata <- fread("data/GOMC/41586_2024_7891_MOESM3_ESM.csv")
 GOMC_HQ_genome_ids <- GOMC_metadata %>% filter(`Contamination (%)` <= 5, `Completeness (%)` >= 90) %>% rename(genome_id = Bin_id)
+
+# Contig information
+
+contig_stats <- fread("data/GOMC/contig_stats.tsv")
+
+GOMC_N50 <- contig_stats %>%
+  group_by(genome) %>%
+  reframe(
+    decreasing_csizes = sort(length, decreasing = TRUE),
+    tmp = cumsum(as.numeric(decreasing_csizes)),
+    total_size = tmp[length(tmp)],
+    N50 = decreasing_csizes[which(tmp >= total_size/2)[1]]
+  ) %>%
+  reframe(
+    median_N50 = median(N50),
+    Q1 = quantile(N50, 0.25, na.rm = TRUE),
+    Q3 = quantile(N50, 0.75, na.rm = TRUE))
+
+GOMC_median_contig_no <- contig_stats %>%
+  group_by(genome) %>%
+  summarise(contig_no = n()) %>%
+  summarise(
+    median_contig_no = median(contig_no),
+    Q1 = quantile(contig_no, 0.25, na.rm = TRUE),
+    Q3 = quantile(contig_no, 0.75, na.rm = TRUE)
+    )
+
 
 # Write genomes to file
 fwrite(GOMC_HQ_genome_ids %>% select(genome_id), "data/GOMC/GOMC_HQ_genome_ids.tsv")
@@ -149,7 +177,8 @@ epsSMASH_GOMC <- map2_dfr(categories, n_categories, ~ {
   if (.x == "All") {
     base_df %>%
       group_by(genome_id, MAG_status) %>%
-      mutate(BGCs = ifelse(is.na(Category), 0, n())) %>%
+      filter(!is.na(Category)) %>%
+      mutate(BGCs = n()) %>%
       group_by(MAG_status) %>%
       distinct(genome_id, .keep_all = TRUE) %>%
       reframe(
@@ -165,6 +194,7 @@ epsSMASH_GOMC <- map2_dfr(categories, n_categories, ~ {
     base_df %>%
       filter(Category == .x) %>%
       group_by(genome_id, MAG_status) %>%
+      filter(!is.na(Category)) %>%
       mutate(BGCs = n()) %>%
       bind_rows(distinct_genomes %>% filter(Category != .x | is.na(Category))) %>%
       mutate(BGCs = ifelse(is.na(BGCs), 0, BGCs)) %>%
@@ -183,7 +213,7 @@ epsSMASH_GOMC <- map2_dfr(categories, n_categories, ~ {
 }) %>%
   left_join(percentage, by = c("MAG_status", "Category", "n_Category"))
 
-
+epsSMASH_GOMC
 ```
 # Plotting the stats for GOMC epsSMASH results
 ```{r}

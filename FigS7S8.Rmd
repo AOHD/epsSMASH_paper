@@ -299,18 +299,6 @@ data_filtered <- gene_info_all %>% filter(region_id %in% picked_regions) %>%
 
 
 
-ggplot(data_filtered %>% filter(!is.na(Query)), 
-                      aes(xmin = start, xmax = end, y = tax, fill = Query, forward = strand,  label = Query)
-                      ) +
-  geom_gene_arrow() +
-  scale_fill_brewer(palette = "Paired", na.value = "grey50") +
-  facet_wrap(~ genus, scales = "free", ncol = 1) +
-  theme_genes() +
-  theme(
-    axis.line.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-  )
 
 
 flip_cluster <- function(df, cluster_name) {
@@ -363,15 +351,10 @@ gene_arrows <- ggplot(genes_flipped %>% filter(!is.na(Query)),
   geom_blank(data = dummies, aes(forward = 1)) +
   geom_text(angle = 45, hjust = 1.45, size = 4) +
   scale_fill_brewer(palette = "Set2", na.value = "grey50") +
+  scale_x_continuous(breaks = c(0,2500,5000,7500,10000,12500,15000,17500,20000)) +
   facet_wrap(~ tax, scales = "free", ncol = 1) +
-  theme_genes() +
-  theme(
-    axis.line.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-  )
+  theme_genes() 
 
-gene_arrows
 
 ggsave("figures/all/FigS7.svg", height = 15, width = 10)
 
@@ -550,12 +533,10 @@ gene_arrows <- ggplot(pel_like_picked,
   geom_blank(data = dummies, aes(forward = 1)) +
   geom_text(angle = 45, hjust = 1.45, size = 4) +
   scale_fill_brewer(palette = "Set2", na.value = "grey50") +
+  scale_x_continuous(breaks = c(0,2500,5000,7500,10000,12500)) +
   facet_wrap(~ tax, scales = "free", ncol = 1) +
   theme_genes() +
   theme(
-    axis.line.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
     legend.position = "bottom"
   )
 

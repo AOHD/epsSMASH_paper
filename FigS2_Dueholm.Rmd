@@ -13,6 +13,7 @@ library(ggfittext)
 ```
 
 ```{r}
+# Read supplementary file from Dueholm et al. study (must be added to directory)
 Dueholm_BGCs <- fread("data/Dueholm/Dueholm.tsv") %>% 
   group_by(MAG, Exopolysaccharide) %>% 
   mutate(
@@ -80,7 +81,7 @@ epsSMASH_Dueholm <- fread("data/Dueholm/all_regions.tsv") %>%
   mutate(
   Dueholm = ifelse(Dueholm == epsSMASH | is.na(epsSMASH), Dueholm, NA),
   exoPS = ifelse(is.na(Dueholm), epsSMASH, Dueholm),
-  Detection = case_when(
+  `exoPS predictions` = case_when(
     is.na(Dueholm) & !is.na(epsSMASH) ~ "epsSMASH",
     !is.na(Dueholm) & is.na(epsSMASH) ~ "Dueholm et al. (2023)",
     !is.na(Dueholm) & !is.na(epsSMASH) ~ "Both",
@@ -88,22 +89,22 @@ epsSMASH_Dueholm <- fread("data/Dueholm/all_regions.tsv") %>%
     )
     )
 
-ggplot(epsSMASH_Dueholm %>% group_by(Detection, exoPS) %>% count() %>%
-  mutate(Detection = factor(Detection, levels = c("epsSMASH", "Dueholm et al. (2023)", "Both"))), 
-  aes(x = exoPS, y = n, fill = Detection, label = n)) +
+ggplot(epsSMASH_Dueholm %>% group_by(`exoPS predictions`, exoPS) %>% count() %>%
+  mutate(`exoPS predictions` = factor(`exoPS predictions`, levels = c("epsSMASH", "Dueholm et al. (2023)", "Both"))), 
+  aes(x = exoPS, y = n, fill = `exoPS predictions`, label = n)) +
   geom_col(position = position_dodge2(preserve = "single")) +
   scale_y_continuous(trans = "identity") +
-  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE) +
-  ylab("No. of BGCs found in genomes") +
+  geom_bar_text(position = position_dodge2(preserve = "single"), outside = TRUE, size = 16) +
+  ylab("BGCs") +
   scale_fill_brewer(palette =  "Set2") +
   theme_bw() +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
-    axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12),
-    legend.text = element_text(size = 12)
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 16)
   )
-ggsave("figures/all/FigS2.svg", dpi = 300, height = 8, width = 16)
+ggsave("figures/all/FigS2.svg", dpi = 300, height = 8, width = 12)
 
 # get genomes in which Dueholm finds xanthan, psl or PNAG (eps)
 Dueholm_wzxwzy <- Dueholm_BGCs %>% filter(str_detect("PNAG_eps|Psl|Xanthan", Dueholm)) %>% distinct(MAG)
