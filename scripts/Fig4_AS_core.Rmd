@@ -1,0 +1,247 @@
+```{r setup, include=FALSE}
+library(tidyverse)
+library(igraph)
+library(stringr)
+library(ggforce)
+library(data.table)
+library(ggupset)
+library(gggenes)
+library(forcats)
+library(ape)
+library(RColorBrewer)
+library(svglite)
+library(aplot)
+library(ggh4x) 
+library(treeio)
+library(ggtree)
+library(ggtreeExtra)
+library(readxl)
+library(ggtext)
+`%ni%` <- Negate(`%in%`)
+```
+
+```{r}
+
+MiDAS_all_regions_metadata <- fread("../data/MiDAS/epsSMASH_results_10k_core/all_regions.tsv") %>%
+  #filter(!str_detect(product, "-like")) %>%
+  rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+    mutate(
+    Category = case_when(
+      str_detect(product, "putative") ~ "Uncharacterised",
+      str_detect(product, "GCF|sphingomonadales") ~ "Uncharacterised",
+      str_detect(product, "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|
+                 |psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps") ~ "Wzx/Wzy",
+      str_detect(product, "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has") ~ "Synthase",
+      str_detect(product, "fructansucrase|alpha-glucansucrase") ~ "Sucrase",
+      TRUE ~ NA  # Changed from your original "NA" string to actual NA, adjust as needed
+      ),
+    product = case_when(
+      product == "alginate" ~ "Alginate",
+      product == "acetylated-cellulose" ~ "Cellulose", 
+      product == "generic-cellulose" ~ "Cellulose",
+      product == "type-1-cellulose" ~ "Cellulose",
+      product == "type-2-cellulose" ~ "Cellulose",
+      product == "type-3-cellulose" ~ "Cellulose",
+      product == "pel" ~ "Pel",
+      product == "pel-positive" ~ "Pel",
+      product == "PNAG-pga" ~ "PNAG (pga)",
+      product == "alginate-like" ~ "Alginate",
+      product == "cellulose-gram-positive-like" ~ "Cellulose",
+      product == "cellulose-like" ~ "Cellulose",
+      product == "curdlan-like" ~ "Curdlan",
+      product == "pel-like" ~ "Pel",
+      product == "PNAG-pga-like" ~ "PNAG (pga)",
+      product == "galactoglucan" ~ "Galactoglucan",
+      product == "lactobacillus_eps" ~ "Lactobacillus EPS",
+      product == "psl" ~ "Psl",
+      product == "zooglan" ~ "Zooglan",
+      product == "alpha-glucansucrase" ~ "Alpha-glucansucrase",
+      product == "fructansucrase" ~ "Fructansucrase",
+      product == "sphingomonadales_eps" ~ "MiDAS_GCF_1",
+      product == "MiDAS_GCF_6_1" ~ "MiDAS_GCF_6",
+      str_detect(product, "putative") ~ "Uncharacterised",
+      .default = product
+      ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    )
+    ) %>% 
+  mutate(
+  shared_name = paste0(record_id, ".region00", region, ".gbk_region_1"),
+    product_1 = ifelse(str_detect(product, "putative"), "Uncharacterised", product)
+  ) 
+
+fwrite(MiDAS_all_regions_metadata, "../results/uncharacterised/10k_core_BiGSCAPE_metadata.tsv", sep = "\t")
+
+
+# MiDAS genome numbers
+
+MiDAS_tax <- fread(
+  "/projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/100-general/024-midas4.8core.with.midas5.3/core.hqMAGs/9971.core.hqMAGs.taxa.tsv"
+  ) %>%
+  select(genome_id = bin, gtdb.r226) %>%
+  separate(
+    gtdb.r226, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";.__"
+  )
+
+MiDAS_tax_Genome_no <- MiDAS_tax %>%
+  group_by(Genus) %>%
+  mutate(Genus_no = sum(length(Genus))) %>%
+  select(Genus, Genus_no)
+
+
+iTOL_IDs <- fread("/projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/008-core_crat-midas4.8/03-hqMAGs-per-core.crat/03-functional.conservation/00-genus.Rep/01-gtdb.tree/core.genus.Rep-gtdbtk-tree.out/layers/genus.Rep-old-new_genus_names.tsv") %>%
+  select(`Tree node ID` = genus.Rep, Genus = gtdb.r226.genus, Genus_new = 3)
+
+# % genomes with BGCs
+
+MiDAS_all_regions <- fread("../data/MiDAS/epsSMASH_results_10k_core/all_regions.tsv") %>%
+  rename(genome_id = file) %>%
+  left_join(MiDAS_tax) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+    mutate(
+    Category = case_when(
+      str_detect(product, "putative") ~ "Uncharacterised",
+      str_detect(product, "GCF|sphingomonadales") ~ "Uncharacterised",
+      str_detect(product, "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|
+                 |psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps") ~ "Wzx/Wzy",
+      str_detect(product, "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has") ~ "Synthase",
+      str_detect(product, "fructansucrase|alpha-glucansucrase") ~ "Sucrase",
+      TRUE ~ NA  # Changed from your original "NA" string to actual NA, adjust as needed
+      ),
+    product = case_when(
+      product == "alginate" ~ "Alginate",
+      product == "acetylated-cellulose" ~ "Cellulose", 
+      product == "generic-cellulose" ~ "Cellulose",
+      product == "type-1-cellulose" ~ "Cellulose",
+      product == "type-2-cellulose" ~ "Cellulose",
+      product == "type-3-cellulose" ~ "Cellulose",
+      product == "pel" ~ "Pel",
+      product == "pel-positive" ~ "Pel",
+      product == "PNAG-pga" ~ "PNAG (pga)",
+      product == "alginate-like" ~ "Alginate",
+      product == "cellulose-gram-positive-like" ~ "Cellulose",
+      product == "cellulose-like" ~ "Cellulose",
+      product == "curdlan-like" ~ "Curdlan",
+      product == "pel-like" ~ "Pel",
+      product == "PNAG-pga-like" ~ "PNAG (pga)",
+      product == "galactoglucan" ~ "Galactoglucan",
+      product == "lactobacillus_eps" ~ "Lactobacillus EPS",
+      product == "psl" ~ "Psl",
+      product == "zooglan" ~ "Zooglan",
+      product == "alpha-glucansucrase" ~ "Alpha-glucansucrase",
+      product == "fructansucrase" ~ "Fructansucrase",
+      product == "sphingomonadales_eps" ~ "MiDAS_GCF_1",
+      product == "MiDAS_GCF_6_1" ~ "MiDAS_GCF_6",
+      str_detect(product, "putative") ~ "Uncharacterised",
+      .default = product
+      ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    )
+    ) %>% 
+  left_join(MiDAS_tax_Genome_no, by = c("Genus")) %>%
+  group_by(genome_id) %>%
+  distinct(product, .keep_all = TRUE) %>% 
+  ungroup() %>%
+  group_by(Genus, n_Category, product) %>%
+  mutate(Hits = sum(length(product))) %>% ungroup() %>%
+  group_by(Genus) %>%
+  distinct(product, .keep_all = TRUE) %>%
+  mutate(`% genomes with BGC` = round((Hits/Genus_no)*100, digits = 2))
+
+```
+
+```{r}
+
+####################################################################
+# Uncharacterised                   #
+####################################################################
+
+
+Uncharacterised <- MiDAS_all_regions %>%
+  filter(n_Category == 1) %>%
+  right_join(iTOL_IDs) %>%
+  select(`Tree node ID`, Genus, product, `% genomes with BGC`) %>%
+  pivot_wider(names_from = product, values_from = `% genomes with BGC`, values_fill = 0) %>%
+  select(`Tree node ID`, Genus, everything()) %>%
+  group_by(Genus, `Tree node ID`) %>%
+  summarise(across(1:16, sum, na.rm = TRUE), .groups = "keep")
+
+# Sort columns 4:19 numerically
+cols <- names(Uncharacterised)[4:18]
+sorted_cols <- cols[str_order(cols, numeric = TRUE)]
+
+Uncharacterised <- Uncharacterised %>%
+  select(`Tree node ID`, Genus, Uncharacterised, all_of(sorted_cols)) %>%
+  mutate(`Tree node ID` = paste0(`Tree node ID`, "'"))
+
+
+fwrite(Uncharacterised, "../results/uncharacterised/iTOL_uncharacterised.tsv", sep = "\t")
+
+
+```
+
+```{r}
+
+####################################################################
+# Synthase                   #
+####################################################################
+
+Synthase <- MiDAS_all_regions %>%
+  filter(n_Category == 2) %>%
+  right_join(iTOL_IDs) %>%
+  select(`Tree node ID`, Genus, product, `% genomes with BGC`) %>%
+  pivot_wider(names_from = product, values_from = `% genomes with BGC`, values_fill = 0) %>%
+  select(`Tree node ID`, Genus, everything()) %>%
+  group_by(Genus, `Tree node ID`) %>%
+  summarise(across(1:5, sum, na.rm = TRUE), .groups = "keep")
+
+# Sort columns 4:19 numerically
+cols <- names(Synthase)[3:7]
+sorted_cols <- cols[str_order(cols)]
+
+Synthase <- Synthase %>%
+  select(`Tree node ID`, Genus, all_of(sorted_cols)) %>%
+  mutate(`Tree node ID` = paste0(`Tree node ID`, "'"))
+
+
+fwrite(Synthase, "../results/uncharacterised/iTOL_synthase.tsv", sep = "\t")
+
+
+```
+
+```{r}
+####################################################################
+# Wzx/Wzy                                                         #
+####################################################################
+WzxWzy <- MiDAS_all_regions %>%
+  filter(n_Category == 3) %>%
+  right_join(iTOL_IDs) %>%
+  select(`Tree node ID`, Genus, product, `% genomes with BGC`) %>%
+  pivot_wider(names_from = product, values_from = `% genomes with BGC`, values_fill = 0) %>%
+  select(`Tree node ID`, Genus, everything()) %>%
+  group_by(Genus, `Tree node ID`) %>%
+  summarise(across(1:3, sum, na.rm = TRUE), .groups = "keep")
+
+# Sort columns 4:19 numerically
+cols <- names(WzxWzy)[3:5]
+sorted_cols <- cols[str_order(cols)]
+
+WzxWzy <- WzxWzy %>%
+  select(`Tree node ID`, Genus, all_of(sorted_cols)) %>%
+  mutate(`Tree node ID` = paste0(`Tree node ID`, "'"))
+
+
+fwrite(WzxWzy, "../results/uncharacterised/iTOL_wzywzx.tsv", sep = "\t")
+
+
+
+```
