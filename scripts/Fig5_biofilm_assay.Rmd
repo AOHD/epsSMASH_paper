@@ -1,0 +1,77 @@
+
+# Load libraries
+```{r}
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(ggtext)
+library(RColorBrewer)
+library(patchwork)
+f <- function(pal) brewer.pal(brewer.pal.info[pal, "maxcolors"], pal)
+(cols <- f("Set2"))
+
+scale_fill_discrete <- function(...) {
+   scale_fill_manual(..., values = (cols <- f("Set2")))
+} 
+`%ni%` <- Negate(`%in%`)
+
+
+myColors <- brewer.pal(3, "Set2")
+
+names(myColors) <- c("Wild-type", "Δ2374-2380", "Δ2730-2732")
+
+```
+# Load data
+```{r}
+data <- fread("../data/S_granuli_TFA_experiments/biofilm_assay_combined.csv") %>%
+  mutate(
+    Wavelength = as.character(Wavelength)
+  ) %>%
+  group_by(Strain, Wavelength, `Initial OD~600~`) %>%
+    summarise(
+        mean_OD = mean(OD, na.rm = TRUE),
+        sd = sd(OD, na.rm = TRUE)
+  )
+
+```
+
+# Plot graph
+```{r}
+p1<- ggplot(data %>% filter(Wavelength == "600"), aes(x = `Initial OD~600~`, y = mean_OD, color = Strain)) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin=mean_OD-sd, ymax=mean_OD+sd), width = 0.05) +
+  theme_bw() +
+  ylab("Planktonic growth (A~600~)") +
+  scale_color_manual(values = myColors, drop = FALSE) +
+  scale_x_continuous(trans = "log10") +
+  theme(
+    axis.title = element_markdown(size = 15),
+    axis.text = element_text(size = 15),
+    legend.position = "none"
+  )
+
+p2 <- ggplot(data %>% filter(Wavelength == "620"), aes(x = `Initial OD~600~`, y = mean_OD, color = Strain)) +
+  geom_point() +
+  geom_line() +
+  geom_errorbar(aes(ymin=mean_OD-sd, ymax=mean_OD+sd), width = 0.05) +
+  theme_bw() +
+  ylab("Biofilm growth (A~620~)") +
+  scale_color_manual(values = myColors, drop = FALSE) +
+    scale_x_continuous(
+    breaks = c(0.001, 0.01, 0.1), 
+    trans = "log10"
+  ) +
+  theme(
+    axis.title = element_markdown(size = 15),
+    axis.text = element_text(size = 15),
+    legend.position = "none"
+  )
+  
+p3 <- p1 + p2
+p3
+
+ggsave("../figures/Fig5_E.svg", p3, height = 3, width = 6)
+```
+
+
