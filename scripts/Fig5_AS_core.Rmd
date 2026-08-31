@@ -66,7 +66,7 @@ fwrite(MiDAS_all_regions_metadata, "../results/10kcore/10k_core_BiGSCAPE_metadat
 # MiDAS genome numbers
 
 MiDAS_tax <- fread(
-  "/projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/100-general/024-midas4.8core.with.midas5.3/core.hqMAGs/9971.core.hqMAGs.taxa.tsv"
+  "../data/MiDAS/9971.core.hqMAGs.taxa.tsv"
   ) %>%
   select(genome_id = bin, gtdb.r226) %>%
   separate(

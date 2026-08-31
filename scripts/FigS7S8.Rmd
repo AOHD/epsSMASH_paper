@@ -61,7 +61,7 @@ GOMC_tax <- fread("../data/GTDB220_HumGut_GOMC/gtdbtk-v2.4.0_GOMC-HumGut.summary
   separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
 
 GOMC_gene_info <- fread(
-    "../data/GOMC/gene_info.tsv") %>%
+    "../data/GOMC/gene_info_GOMC.tsv") %>%
     mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
     group_by(gene_id) %>%
     ungroup() %>%
@@ -99,7 +99,7 @@ MiDAS_tax <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep_list$genome_id) 
   separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
 
 MiDAS_gene_info <- fread(
-    "../data/MiDAS/gene_info.tsv") %>%
+    "../data/MiDAS/gene_info_MiDAS.tsv") %>%
     mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
     group_by(gene_id) %>%
     ungroup() %>%
@@ -143,7 +143,7 @@ HumGut_tax <- HumGut_tax %>% distinct(cluster95, .keep_all = TRUE) %>% mutate(Da
 
 
 HumGut_gene_info <- fread(
-    "../data/HumGut/gene_info.tsv") %>%
+    "../data/HumGut/gene_info_HumGut.tsv") %>%
     mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
     group_by(gene_id) %>%
     ungroup() %>%
@@ -173,7 +173,7 @@ MFD_tax <- fread("../data/MFD/MFD_mags_drep_V4.tsv") %>% filter(MAG_status == "H
   
 
 MFD_gene_info <- fread(
-    "../data/MFD/gene_info.tsv") %>%
+    "../data/MFD/gene_info_MFD.tsv") %>%
     mutate(bitscore = ifelse(is.na(bitscore), 0, bitscore)) %>%
     group_by(gene_id) %>%
     ungroup() %>%

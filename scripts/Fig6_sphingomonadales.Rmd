@@ -55,7 +55,7 @@ tree_tib <- as_tibble(tree) %>%
     )
 
 # Loading hmmsearch results for the Exosortase HMM using TC as cut-off bitscore
-Exosortase <- fread("../results/sphingomonadales/hmmsearch/Exosortase.csv") %>%
+Exosortase <- fread("../results/sphingomonadales/hmmsearch/exosortase.csv") %>%
   filter(bitscore >= 105.55) %>% group_by(genome) %>% count() %>% select(genome, Exosortase = n)
 
 # Loading hmmsearch results for the PEP-CTERM HMM using TC as cut-off bitscore
