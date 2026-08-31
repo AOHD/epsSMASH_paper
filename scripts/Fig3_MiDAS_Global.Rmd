@@ -24,14 +24,13 @@ library(readxl)
 ```{r}
 
 # Read supplementary file from MiDAS Global study (must be added to directory)
-MiDAS_HQ_tax <- fread("../data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
-  select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3")
+MiDAS_derep_list <- fread("../data/MiDAS/epsSMASH_results/region_counts.tsv") %>% select(genome_id = record) %>%
+  mutate(genome_id = gsub(".fa", "", genome_id))
 
-# List of dereplicated MiDAS genomes
-MiDAS_derep <- fread("../data/MiDAS/derep_MAGs_list.tsv")
-
-# Taxonomy of all dereplicated MiDAS global MAGs
-MiDAS_tax_derep_HQ <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep$genome_id) %>% select(genome_id, gtdb_classification, MiDAS_classification) %>% mutate(MAG_status = "HQ")
+MiDAS_tax_derep_HQ <- fread("../data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
+  select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3") %>%
+  mutate(MAG_status = "HQ") %>%
+  filter(genome_id %in% MiDAS_derep_list$genome_id)
 
 # Contig information
 
@@ -73,7 +72,7 @@ fwrite(MiDAS_tax_derep_HQ %>% select(genome_id), "../data/MiDAS/MiDAS_HQ_genome_
 ####################################################################
 
 
-MiDAS_all_regions <- fread("../data/MiDAS/all_regions.tsv") %>%
+MiDAS_all_regions <- fread("../data/MiDAS/epsSMASH_results/all_regions.tsv") %>%
   dplyr::rename(genome_id = file) %>%
   separate_longer_delim(product, delim = " / ") %>%
   mutate(
@@ -131,6 +130,76 @@ MiDAS_metadata <- MiDAS_all_regions %>% mutate(
 fwrite(MiDAS_metadata, "../data/MiDAS/MiDAS_metadata.tsv", sep = "\t")
 
 ```
+
+# Doing the same for epsSMASH results after GCF rules have been added (For supplementary figure 4)
+```{r}
+
+####################################################################
+# Load in MiDAS Global epsSMASH results, add taxonomy and metadata #
+####################################################################
+
+
+MiDAS_all_regions_GCF <- fread("../data/MiDAS/epsSMASH_results_GCF/all_regions.tsv") %>%
+  dplyr::rename(genome_id = file) %>%
+  separate_longer_delim(product, delim = " / ") %>%
+  mutate(
+    Category = ifelse(
+      str_detect(product,
+        "putative_wzy_dependent|putative_wzy_dependent_NO_OPX"
+      ), "Uncharacterised", "NA"
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "putative_ABC_dependent|putative_ABC_dependent_NO_OPX"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+        "putative_ABC_or_wzy_dependent"
+      ), "Uncharacterised", Category
+    ),
+    Category = ifelse(
+      str_detect(product,
+      "amylovoran_stewartan|acetan|succinoglycan|colanic|xanthan|galactoglucan|psl|PNAG_eps|lactobacillus_eps|sphingans|zooglan|emulsan|PNAG_eps"
+      ), "Wzx/Wzy", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "cellulose|pel-positive|pel|alginate|curdlan|PNAG-ica|PNAG-pga|HA_has"), "Synthase", Category
+    ),
+    Category = ifelse(
+      str_detect(product, 
+      "fructansucrase|alpha-glucansucrase"), "Sucrase", Category
+    ),
+    n_Category = case_when(
+      Category == "Uncharacterised" ~ 1,
+      Category == "Synthase" ~ 2,
+      Category == "Wzx/Wzy" ~ 3,
+      Category == "Sucrase" ~ 4
+    ),
+    product = case_when(
+      product == "acetylated-cellulose" ~ "cellulose-acetylated",
+      product == "type-1-cellulose" ~ "cellulose-type-1",
+      product == "type-2-cellulose" ~ "cellulose-type-2",
+      product == "type-3-cellulose" ~ "cellulose-type-3",
+      product == "generic-cellulose" ~"cellulose-generic",
+      .default = product
+    )
+    ) %>% left_join(MiDAS_tax_derep_HQ, by = c("genome_id"))
+
+# Metadata for Cytoscape
+MiDAS_metadata_GCF <- MiDAS_all_regions_GCF %>% mutate(
+  shared_name = paste0(record_id, ".region00", region, ".gbk_region_1"),
+    product_1_GCF = ifelse(!str_detect(product, "GCF"), "NA", product)
+  ) %>%
+  separate(gtdb_classification, into = c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"), sep = ";") %>%
+  filter(shared_name %in% MiDAS_metadata$shared_name)
+
+fwrite(MiDAS_metadata_GCF, "../data/MiDAS/MiDAS_metadata_GCF.tsv", sep = "\t")
+
+```
+
+
 # % of complete BGCs in the HQ species representatives and the number of BGCs/MAGs
 ```{r}
 

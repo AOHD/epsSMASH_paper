@@ -1,16 +1,16 @@
 #------------------------<  Set these for every job  >------------------------#
 
 # Cores to use in parallel
-cores: 45                          # 'all' will use all available CPU cores
+cores: 50                          # 'all' will use all available CPU cores
 
 # Input directory containing the data
-in_dir: /projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/100-general/024-midas4.8core.with.midas5.3/core.hqMAGs/HQ-MAGs                # Relative paths are relative to THIS file!
+in_dir: /projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/001-dRep_v3.5.0/dRep_v3.5.0_skani-95_species-dereplicated/dereplicated_genomes              # Relative paths are relative to THIS file!
 
 # Input file extension (no leading period)
-in_ext: fa                # Leave blank for antiSMASH result folders
+in_ext: fa                  # Leave blank for antiSMASH result folders
 
 # Output directory to store the results
-out_dir: epsSMASH_results_10k_core       # Paths can also be absolute
+out_dir: MiDAS_global      # Paths can also be absolute
 
 # Desired analyses - antiSMASH will always be run unless existing results are given
 run_tabulation: True

@@ -404,7 +404,7 @@ plot_gene_clusters <- function(data, subset_size, ncol = 2, legend_position = "r
 
 ```
 
-# Visualise pel-like clusters from MiDAS and the cellulose-like clusters from GOMC
+# Visualise pel-like clusters from MiDAS
 
 ```{r}
 

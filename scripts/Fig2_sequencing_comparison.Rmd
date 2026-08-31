@@ -201,7 +201,7 @@ epsSMASH_Eisenhofer_N50 <- base_df_Eisenhofer %>%
 # Figuring out which samples are shared between the deep and shallow sequencing (They sequenced 10k samples for shallow sequencing and only 153 for deep sequencing)
 # Dereplication was done on both the genome sets, so since we're subsetting the shallow MAGs to only the ones from samples where deep sequencing was also done, we are getting less than 153 shared samples (70 shared samples)
 
-MFD_contig_stats_deep <- fread("../data/MFD/contig_stats.tsv") %>% 
+MFD_contig_stats_deep <- fread("../data/MFD/contig_stats_deep.tsv") %>% 
   mutate(file = gsub(".fa", "", genome)) %>%
   select(file, length) %>%
   group_by(file) %>%
@@ -215,7 +215,7 @@ MFD_contig_stats_deep <- fread("../data/MFD/contig_stats.tsv") %>%
   distinct(file, .keep_all = TRUE) %>%
   select(file, `N50 (kbp)`)
 
-epsSMASH_MFD_deep <- fread("../data/MFD/all_regions_all_deep_MAGs.tsv")
+epsSMASH_MFD_deep <- fread("../data/MFD/all_regions_deep_MAGs.tsv")
 
 # Read supplementary file from MFD long-read study (must be added to directory)
 MFD_deep <- fread("../data/MFD/MFD_mags_drep_V4.tsv") %>% rename(file = bin) %>% mutate(Sample = gsub(".bin.*", "", file)) %>%
