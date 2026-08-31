@@ -1,15 +1,8 @@
 ```{r setup, include=FALSE}
-library(tidyverse)
-library(igraph)
-library(stringr)
-library(ggforce)
-library(data.table)
-library(ggupset)
-library(gggenes)
-library(forcats)
-library(readxl)
-library(ggrepel)
-library(ggfittext)
+library(tidyverse)      
+library(data.table)     
+library(readxl)         
+library(ggfittext)      
 `%ni%` <- Negate(`%in%`)
 ```
 

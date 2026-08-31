@@ -1,4 +1,16 @@
 
+```{r}
+
+library(tidyverse)      
+library(data.table)     
+library(RColorBrewer)   
+library(readxl)    
+library(ggtree)
+
+`%ni%` <- Negate(`%in%`)
+
+```
+
 # Run Fig3_GOMC.Rmd, Fig3_HumGut.Rmd, Fig3_MFD.Rmd and Fig3_MiDAS_Global.Rmd before running this Rmd, as it creates the neccessary dataframes for the figures in this Rmd.
 ```{r}
 create_combined_plot <- function(data, title_text) {

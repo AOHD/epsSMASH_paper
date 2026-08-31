@@ -1,16 +1,10 @@
 # Loading libraries
 
 ```{r, setup}
-library(ggtree)
-library(ggtreeExtra)
-library(ggplot2)
 library(gggenes)
 library(tidyverse)
 library(data.table)
-library(tidytree)
-library(ggnewscale)
-library(stringr)
-library(phangorn)
+library(RColorBrewer)
 `%ni%` <- Negate(`%in%`)
 library(RColorBrewer)
 display.brewer.all(colorblindFriendly = TRUE)
@@ -95,10 +89,12 @@ GOMC_gene_info <- fread(
 MiDAS_HQ_tax <- fread("../data/MiDAS/22K-hqMAGs.GTDB_midas.taxa.tsv") %>%
   select(genome_id = bin, gtdb_classification = tax_gtdb.r220, MiDAS_classification = "tax_midas_v5.3")
 
-# List of dereplicated MiDAS genomes
-MiDAS_derep <- fread("../data/MiDAS/derep_MAGs_list.tsv")
+# Read supplementary file from MiDAS Global study (must be added to directory)
+MiDAS_derep_list <- fread("../data/MiDAS/epsSMASH_results/region_counts.tsv") %>% select(genome_id = record) %>%
+  mutate(genome_id = gsub(".fa", "", genome_id))
 
-MiDAS_tax <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep$genome_id) %>% select(genome_id, gtdb_classification, MiDAS_classification) %>%
+
+MiDAS_tax <- MiDAS_HQ_tax %>% filter(genome_id %in% MiDAS_derep_list$genome_id) %>% select(genome_id, gtdb_classification, MiDAS_classification) %>%
   mutate(MAG_status = "HQ") %>%
   separate(gtdb_classification, into = c("domain","phylum", "class", "order", "family", "genus", "species"), sep = ";.__")
 

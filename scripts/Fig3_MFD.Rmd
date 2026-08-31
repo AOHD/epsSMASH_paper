@@ -1,21 +1,8 @@
 ```{r setup, include=FALSE}
-library(tidyverse)
-library(igraph)
-library(stringr)
-library(ggforce)
-library(data.table)
-library(ggupset)
-library(gggenes)
-library(forcats)
-library(ape)
-library(RColorBrewer)
-library(svglite)
-library(aplot)
-library(ggh4x) 
-library(treeio)
-library(ggtree)
-library(ggtreeExtra)
-library(readxl)
+library(tidyverse)      
+library(data.table)     
+library(RColorBrewer)   
+library(readxl)    
 
 `%ni%` <- Negate(`%in%`)
 ```
@@ -28,7 +15,7 @@ MFD_tax_derep <- fread("../data/MFD/MFD_mags_drep_V4.tsv") %>% dplyr::rename(gen
 
 # Contig information
 
-contig_stats <- fread("../data/MFD/contig_stats.tsv") %>%
+contig_stats <- fread("../data/MFD/contig_stats_deep.tsv") %>%
   mutate(genome = gsub(".fa", "", genome)) %>%
   filter(genome %in% MFD_tax_derep_HQ$genome_id)
 
