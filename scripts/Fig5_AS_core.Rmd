@@ -79,7 +79,7 @@ MiDAS_tax_Genome_no <- MiDAS_tax %>%
   select(Genus, Genus_no)
 
 
-iTOL_IDs <- fread("/projects/PHN/MiDAS/04-Analysis/Status-analysis/103-samples/100-add_checkm1/03-MAGs.final-version/008-core_crat-midas4.8/03-hqMAGs-per-core.crat/03-functional.conservation/00-genus.Rep/01-gtdb.tree/core.genus.Rep-gtdbtk-tree.out/layers/genus.Rep-old-new_genus_names.tsv") %>%
+iTOL_IDs <- fread("../data/MiDAS/genus.Rep-old-new_genus_names.tsv") %>%
   select(`Tree node ID` = genus.Rep, Genus = gtdb.r226.genus, Genus_new = 3)
 
 # % genomes with BGCs
