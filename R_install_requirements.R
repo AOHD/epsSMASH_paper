@@ -3,12 +3,20 @@
 # install_packages.R
 packages <- c(
   "tidyverse",
-  "knitr",
-  "rmarkdown",
-  "ggplot2",
+  "igraph",
+  "stringr",
+  "data.table",
+  "forcats",
+  "RColorBrewer",
+  "readxl",
+  "patchwork",
   "dplyr",
-  # add all your packages here
-  "your_specific_packages"
+  "ggplot2",
+  "ggtext",
+  "gggenes",
+  "tidytree",
+  "ggnewscale",
+  "ggfittext"
 )
 
 

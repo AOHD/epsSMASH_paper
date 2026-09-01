@@ -356,7 +356,7 @@ gene_arrows <- ggplot(genes_flipped %>% filter(!is.na(Query)),
   theme_genes() 
 
 
-ggsave("../figures/FigS7.svg", height = 15, width = 10)
+ggsave("../figures/FigS3.svg", height = 15, width = 10)
 
 ```
 

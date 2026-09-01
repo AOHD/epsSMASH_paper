@@ -45,9 +45,8 @@ conda deactivate
 eval "$(conda shell.bash hook)"
 
 # Activate the Conda environment
+# IQ-TREE multicore version 2.2.6 COVID-edition for Linux 64-bit built Dec  8 2023
 conda activate iqtree
-
-echo "Building your fantastic tree 🌳🌳🌳🌳"
 
 # #IQ-TREE multicore version 2.2.0.3
 MSA=$ODIR/MSA_sphingomonadales_tree_subset_for_IQtree.faa
