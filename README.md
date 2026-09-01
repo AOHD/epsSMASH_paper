@@ -6,7 +6,7 @@ Repository for data analysis and figure generation in epsSMASH paper
 **data/**\
 Contains the data used by the Rmd files in the main directory for generating the figure and analyses in the paper.
 
-The script for generating Supplementary figures 3 and 8 refers to `gene_info.tsv` files, which contain gene-level information about epsSMASH BGC results. These were generated from the epsSMASH results using a custom multismash_parser python script (https://github.com/AOHD/multismash_parser) and have been included in the Github repository in a zip file, which must be extracted. The extracted folder contains four files (gene_info_HumGut.tsv, gene_info_GOMC.tsv, gene_info_MFD.tsv, gene_info_MiDAS.tsv), which must be placed in their corresponding `data/` folders (`data/HumGut/`, `data/GOMC/`, `data/MFD/`, `data/MiDAS/`). 
+The script for generating Supplementary figures 3 and 8 refers to `gene_info.tsv` files, which contain gene-level information about epsSMASH BGC results. These were generated from the epsSMASH results for each genome catalogue using a custom multismash_parser python script (https://github.com/AOHD/multismash_parser) and have been included in the Github repository in a zip file, which must be extracted. The extracted folder contains four files (gene_info_HumGut.tsv, gene_info_GOMC.tsv, gene_info_MFD.tsv, gene_info_MiDAS.tsv), which must be placed in their corresponding `data/` folders (`data/HumGut/`, `data/GOMC/`, `data/MFD/`, `data/MiDAS/`). 
 
 The script for generating Figure 6a and 6b requires the bacterial metadata file for GTDB Release 226, which must be downloaded from https://data.gtdb.ecogenomic.org/releases/release226/226.0/ and placed in `data/sphingomonadales`.
 
